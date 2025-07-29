@@ -1,66 +1,73 @@
 package io.werescuecats.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "adoptions")
 public class Adoption {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter
+    @Column(name = "adoption_id")
     private Long id;
 
-    @Getter
-    @Setter
+    @Getter @Setter
+    @NotNull(message = "User is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @NotNull(message = "Cat is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cat_id", nullable = false)
     private Cat cat;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private AdoptionStatus status;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "adoption_date", nullable = false)
     private LocalDateTime adoptionDate;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "approved_date")
     private LocalDateTime approvedDate;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "completed_date")
     private LocalDateTime completedDate;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "admin_notes", columnDefinition = "TEXT")
     private String adminNotes;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "processed_by_admin_id")
     private User processedByAdmin;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "tenant_id", length = 50)
     private String tenantId;
 
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     public Adoption() {}

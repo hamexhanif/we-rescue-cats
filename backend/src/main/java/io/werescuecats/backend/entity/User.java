@@ -1,6 +1,9 @@
 package io.werescuecats.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,65 +11,71 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "users")
 public class User {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter
+    @Column(name = "user_id")
     private Long id;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "street_address", length = 255)
     private String streetAddress;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "postal_code", length = 5)
     private String postalCode;
     
+    @Getter @Setter
     @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
+    @Column(name = "role", nullable = false)
     private UserRole role;
 
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "tenant_id", length = 50)
     private String tenantId;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @Column(name = "last_login")
     private LocalDateTime lastLogin;
     
-    @Getter
-    @Setter
+    @Getter @Setter
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Adoption> adoptions;
     
     public User() {}
