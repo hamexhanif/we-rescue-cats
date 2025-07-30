@@ -112,16 +112,6 @@ public class Breed {
     
     @Getter
     @Setter
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Getter
-    @Setter
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "breed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cat> cats;
     
@@ -130,17 +120,6 @@ public class Breed {
     public Breed(String breedId, String name) {
         this.id = breedId;
         this.name = name;
-    }
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
     }
     
     public boolean isGoodWithKids() {
