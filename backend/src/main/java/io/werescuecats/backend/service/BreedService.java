@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -58,12 +59,17 @@ public class BreedService {
             
             List<BreedDto> apiBreeds = Arrays.asList(response.getBody());
 
-            for (BreedDto apiBreed : apiBreeds) {
-                Breed breed = new Breed();
-                breed.setId(apiBreed.getId());
-                mapApiBreedToEntity(apiBreed, breed);
-                breedRepository.save(breed);
-            }
+            List<Breed> breeds = apiBreeds.stream()
+                .map(apiBreed -> {
+                    Breed breed = new Breed();
+                    breed.setId(apiBreed.getId());  
+                    mapApiBreedToEntity(apiBreed, breed);
+                    return breed;
+                })
+                .collect(Collectors.toList());
+            
+            breedRepository.saveAll(breeds);
+                
             log.info("Fetched {} breeds from TheCatAPI", apiBreeds.size());
             
         } catch (Exception e) {
