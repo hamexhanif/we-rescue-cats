@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,19 +34,27 @@ class BreedControllerTest {
     private BreedService breedService;
 
     @Test
-    void getAllBreeds_ReturnsBreedList() throws Exception {
-        List<Breed> breeds = Arrays.asList(createTestBreed("siam", "Siamese"));
-        when(breedService.getAllBreeds()).thenReturn(breeds);
+    void getAllBreeds_WithPagination_ReturnsPagedBreedList() throws Exception {
+        Breed breed = createTestBreed("siam", "Siamese");
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Breed> page = new PageImpl<>(List.of(breed), pageable, 1);
 
-        mockMvc.perform(get("/api/breeds"))
+        when(breedService.getAllBreeds(any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/breeds")
+                .param("page", "0")
+                .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").value("siam"))
-                .andExpect(jsonPath("$[0].name").value("Siamese"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").value("siam"))
+                .andExpect(jsonPath("$.content[0].name").value("Siamese"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.number").value(0));
 
-        verify(breedService).getAllBreeds();
+        verify(breedService).getAllBreeds(any(Pageable.class));
     }
+
 
     @Test
     void getBreedById_ExistingBreed_ReturnsBreed() throws Exception {

@@ -5,6 +5,10 @@ import io.werescuecats.backend.repository.BreedRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +33,33 @@ class BreedServiceIntegrationTest {
     private BreedRepository breedRepository;
 
     @Test
-    void getAllBreeds_WithCaching_ReturnsResults() {
-        Breed breed1 = createTestBreed("siam", "Siamese");
-        Breed breed2 = createTestBreed("pers", "Persian");
-        breedRepository.saveAll(List.of(breed1, breed2));
+    void getAllBreeds_PageSizeOne_ReturnsOneBreedPerPage() {
+        breedRepository.saveAll(List.of(
+            createTestBreed("siam", "Siamese"),
+            createTestBreed("pers", "Persian")
+        ));
 
-        List<Breed> result1 = breedService.getAllBreeds();
-        List<Breed> result2 = breedService.getAllBreeds(); // Should use cache
+        Page<Breed> firstPage = breedService.getAllBreeds(PageRequest.of(0, 1));
+        Page<Breed> secondPage = breedService.getAllBreeds(PageRequest.of(1, 1));
 
-        assertEquals(2, result1.size());
-        assertEquals(2, result2.size());
-        assertEquals(result1, result2);
+        assertEquals(1, firstPage.getContent().size());
+        assertEquals(1, secondPage.getContent().size());
     }
+
+    @Test
+    void getAllBreeds_SortedByName_ReturnsSortedResults() {
+        breedRepository.saveAll(List.of(
+            createTestBreed("zzz", "Zebra Cat"),
+            createTestBreed("aaa", "Abyssinian")
+        ));
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
+        Page<Breed> result = breedService.getAllBreeds(pageable);
+
+        List<Breed> content = result.getContent();
+        assertEquals("Abyssinian", content.get(0).getName());
+        assertEquals("Zebra Cat", content.get(1).getName());
+    } 
 
     @Test
     void searchBreeds_Integration_WorksCorrectly() {

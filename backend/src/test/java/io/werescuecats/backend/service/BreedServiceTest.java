@@ -10,6 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -111,14 +114,25 @@ class BreedServiceTest {
     }
 
     @Test
-    void getAllBreeds_ReturnsAllBreeds() {
-        List<Breed> expectedBreeds = Arrays.asList(testBreed);
-        when(breedRepository.findAll()).thenReturn(expectedBreeds);
+    void getAllBreeds_WithPagination_ReturnsPagedBreeds() {
+        Breed breed1 = new Breed();
+        breed1.setId("siam");
+        breed1.setName("Siamese");
 
-        List<Breed> result = breedService.getAllBreeds();
+        Breed breed2 = new Breed();
+        breed2.setId("pers");
+        breed2.setName("Persian");
 
-        assertEquals(expectedBreeds, result);
-        verify(breedRepository).findAll();
+        List<Breed> breedList = Arrays.asList(breed1, breed2);
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Breed> expectedPage = new PageImpl<>(breedList, pageable, breedList.size());
+
+        when(breedRepository.findAll(pageable)).thenReturn(expectedPage);
+
+        Page<Breed> result = breedService.getAllBreeds(pageable);
+
+        assertEquals(expectedPage, result);
+        verify(breedRepository).findAll(pageable);
     }
 
     @Test
@@ -232,11 +246,7 @@ class BreedServiceTest {
         dto.setAffectionLevel(5);
         dto.setWikipediaUrl("https://en.wikipedia.org/wiki/Siamese_cat");
         dto.setReferenceImageId("0XYvRd7oD");
-        
-        BreedDto.BreedImageDto image = new BreedDto.BreedImageDto();
-        image.setId("0XYvRd7oD");
-        image.setUrl("https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg");
-        dto.setImage(image);
+        dto.setImageUrl("https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg");
         
         return dto;
     }

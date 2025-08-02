@@ -47,13 +47,6 @@ public class BreedDto {
     @JsonProperty("reference_image_id")
     private String referenceImageId;
     
-    private BreedImageDto image;
-    
-    @Data
-    public static class BreedImageDto {
-        private String id;
-        private String url;
-        private Integer width;
-        private Integer height;
-    }
+    @JsonProperty("image_url")
+    private String imageUrl;
 }

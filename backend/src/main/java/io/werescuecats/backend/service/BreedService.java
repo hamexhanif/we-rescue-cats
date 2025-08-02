@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -95,15 +97,13 @@ public class BreedService {
         breed.setWikipediaUrl(apiBreed.getWikipediaUrl());
         breed.setReferenceImageId(apiBreed.getReferenceImageId());
         
-        if (apiBreed.getImage() != null) {
-            breed.setImageUrl(apiBreed.getImage().getUrl());
+        if (apiBreed.getImageUrl() != null) {
+            breed.setImageUrl(apiBreed.getImageUrl());
         }
     }
     
-    @Cacheable("breeds")
-    public List<Breed> getAllBreeds() {
-        log.debug("Fetching all breeds from database");
-        return breedRepository.findAll();
+    public Page<Breed> getAllBreeds(Pageable pageable) {
+        return breedRepository.findAll(pageable);
     }
     
     @Cacheable("breed")
