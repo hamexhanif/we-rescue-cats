@@ -5,6 +5,8 @@ import io.werescuecats.backend.entity.AdoptionStatus;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.entity.CatStatus;
 import io.werescuecats.backend.entity.User;
+import io.werescuecats.backend.exception.CatNotAvailableException;
+import io.werescuecats.backend.exception.ResourceNotFoundException;
 import io.werescuecats.backend.repository.AdoptionRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +40,15 @@ public class AdoptionService {
         Optional<Cat> catOpt = catService.getCatById(catId);
         
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + userId);
+            throw new ResourceNotFoundException("User not found with id: " + userId);
         }
         if (catOpt.isEmpty()) {
-            throw new RuntimeException("Cat not found with id: " + catId);
+            throw new ResourceNotFoundException("Cat not found with id: " + catId);
         }
         
         Cat cat = catOpt.get();
         if (!cat.isAvailable()) {
-            throw new RuntimeException("Cat is not available for adoption: " + cat.getName());
+            throw new CatNotAvailableException("Cat is not available for adoption: " + cat.getName());
         }
         
         Adoption adoption = new Adoption(userOpt.get(), cat, notes);

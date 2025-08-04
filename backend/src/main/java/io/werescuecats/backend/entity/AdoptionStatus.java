@@ -1,6 +1,6 @@
 package io.werescuecats.backend.entity;
 
-enum AdoptionStatus {
+public enum AdoptionStatus {
     PENDING("Pending Review", "Application submitted and awaiting review"),
     APPROVED("Approved", "Application approved, ready for pickup"),
     COMPLETED("Completed", "Cat successfully adopted"),

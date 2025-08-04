@@ -38,17 +38,12 @@ public class AdoptionController {
     public ResponseEntity<AdoptionDto> createAdoption(@RequestBody AdoptionRequestDto request) {
         log.info("Creating adoption request for user {} and cat {}", 
                 request.getUserId(), request.getCatId());
-        try {
             Adoption adoption = adoptionService.createAdoption(
                 request.getUserId(), 
                 request.getCatId(), 
                 request.getNotes()
             );
             return ResponseEntity.ok(toAdoptionDto(adoption));
-        } catch (Exception e) {
-            log.error("Error creating adoption", e);
-            return ResponseEntity.badRequest().build();
-        }
     }
     
     @GetMapping("/pending")
