@@ -10,6 +10,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -27,6 +29,7 @@ public class User {
 
     @Getter @Setter
     @Column(name = "password_hash", nullable = false)
+    @JsonIgnore
     private String passwordHash;
     
     @Getter @Setter

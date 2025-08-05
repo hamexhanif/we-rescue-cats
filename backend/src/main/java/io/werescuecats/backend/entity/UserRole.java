@@ -1,6 +1,6 @@
 package io.werescuecats.backend.entity;
 
-enum UserRole {
+public enum UserRole {
     USER("Regular User", "Can adopt cats and view information"),
     ADMIN("Administrator", "Full access to manage cats, breeds, and adoptions");
     
