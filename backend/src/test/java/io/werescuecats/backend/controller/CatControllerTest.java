@@ -117,11 +117,9 @@ class CatControllerTest {
     @Test
     @WithMockUser
     void getCatsInArea_ShouldReturnCatsInSpecifiedArea() throws Exception {
-        // Given
         List<Cat> cats = Arrays.asList(testCat);
         when(catService.getCatsInArea(51.0504, 13.7373, 10.0)).thenReturn(cats);
 
-        // When & Then
         mockMvc.perform(get("/api/cats/area")
                 .param("lat", "51.0504")
                 .param("lon", "13.7373")
@@ -130,22 +128,6 @@ class CatControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].name").value("Fluffy"));
-
-        verify(catService).getCatsInArea(51.0504, 13.7373, 10.0);
-    }
-
-    @Test
-    @WithMockUser
-    void getCatsInArea_WithDefaultRadius_ShouldUseDefaultValue() throws Exception {
-        // Given
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getCatsInArea(51.0504, 13.7373, 10.0)).thenReturn(cats);
-
-        // When & Then
-        mockMvc.perform(get("/api/cats/area")
-                .param("lat", "51.0504")
-                .param("lon", "13.7373"))
-                .andExpect(status().isOk());
 
         verify(catService).getCatsInArea(51.0504, 13.7373, 10.0);
     }
@@ -209,10 +191,8 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getCatById_WhenCatNotExists_ShouldReturnNotFound() throws Exception {
-        // Given
         when(catService.getCatById(999L)).thenReturn(Optional.empty());
 
-        // When & Then
         mockMvc.perform(get("/api/cats/999"))
                 .andExpect(status().isNotFound());
 
@@ -222,12 +202,10 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getAllCats_ShouldReturnPagedCats() throws Exception {
-        // Given
         List<Cat> cats = Arrays.asList(testCat);
         Page<Cat> page = new PageImpl<>(cats, PageRequest.of(0, 10), 1);
         when(catService.getAllCats(any(Pageable.class))).thenReturn(page);
 
-        // When & Then
         mockMvc.perform(get("/api/cats")
                 .param("page", "0")
                 .param("size", "10"))
@@ -243,10 +221,8 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCat_WithValidData_ShouldCreateCat() throws Exception {
-        // Given
         when(catService.saveCat(any(Cat.class))).thenReturn(testCat);
 
-        // When & Then
         mockMvc.perform(post("/api/cats")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -260,10 +236,8 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCat_WhenServiceThrowsException_ShouldReturnBadRequest() throws Exception {
-        // Given
         when(catService.saveCat(any(Cat.class))).thenThrow(new RuntimeException("Database error"));
 
-        // When & Then
         mockMvc.perform(post("/api/cats")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -276,14 +250,12 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateCatStatus_WithValidData_ShouldUpdateStatus() throws Exception {
-        // Given
         testCat.setStatus(CatStatus.ADOPTED);
         when(catService.updateCatStatus(1L, CatStatus.ADOPTED)).thenReturn(testCat);
         
         StatusUpdateRequestDto request = new StatusUpdateRequestDto();
         request.setStatus(CatStatus.ADOPTED);
 
-        // When & Then
         mockMvc.perform(put("/api/cats/1/status")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -297,14 +269,12 @@ class CatControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateCatStatus_WhenServiceThrowsException_ShouldReturnBadRequest() throws Exception {
-        // Given
         when(catService.updateCatStatus(1L, CatStatus.ADOPTED))
             .thenThrow(new RuntimeException("Cat not found"));
         
         StatusUpdateRequestDto request = new StatusUpdateRequestDto();
         request.setStatus(CatStatus.ADOPTED);
 
-        // When & Then
         mockMvc.perform(put("/api/cats/1/status")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)

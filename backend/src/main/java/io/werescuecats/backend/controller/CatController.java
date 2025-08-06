@@ -49,7 +49,7 @@ public class CatController {
     
     /**
      * Get cats in geographical area
-     * GET /api/cats/area?lat=51.0504&lon=13.7373&radius=10
+     * GET /api/cats/area?lat={value}&lon={value}&radius={value}
      */
     @GetMapping("/area")
     public ResponseEntity<List<CatSummaryDto>> getCatsInArea(
