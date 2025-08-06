@@ -31,7 +31,7 @@ public class UserController {
 
     @PostMapping("/login")
     @RequestMapping("/login")
-    public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<LoginResponseDto> loginUser(@RequestBody @Valid LoginRequestDto request) {
         log.info("Login attempt for user: {}", request.getEmail());
         
         try {
