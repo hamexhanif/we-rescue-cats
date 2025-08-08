@@ -1,0 +1,45 @@
+<mat-toolbar class="header-toolbar">
+    <div class="nav-container">
+        <div class="logo" routerLink="/">we rescue cats</div>
+
+        <nav class="nav-menu">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+            <a routerLink="/cats" routerLinkActive="active">Adopt</a>
+            <a routerLink="/breeds" routerLinkActive="active">Breeds</a>
+        </nav>
+
+        <div class="nav-actions">
+            <ng-container *ngIf="currentUser$ | async as user; else loginButtons">
+                <span class="welcome-text">Welcome, {{user.firstName}}!</span>
+
+                <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                    <mat-icon>account_circle</mat-icon>
+                </button>
+
+                <mat-menu #userMenu="matMenu">
+                    <button mat-menu-item routerLink="/profile">
+                        <mat-icon>person</mat-icon>
+                        <span>Profile</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="isAdmin()" routerLink="/admin">
+                        <mat-icon>admin_panel_settings</mat-icon>
+                        <span>Admin Dashboard</span>
+                    </button>
+
+                    <mat-divider></mat-divider>
+
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Logout</span>
+                    </button>
+                </mat-menu>
+            </ng-container>
+
+            <ng-template #loginButtons>
+                <button mat-button routerLink="/login">Login</button>
+                <button mat-raised-button color="primary" routerLink="/register">Sign Up</button>
+            </ng-template>
+        </div>
+    </div>
+</mat-toolbar>

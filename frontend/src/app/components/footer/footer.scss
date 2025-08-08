@@ -1,0 +1,136 @@
+.footer {
+    background: #323e51;
+    color: white;
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+}
+
+.footer-section {
+    h3 {
+        color: #E08F7E;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    h4 {
+        color: #E08F7E;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    p {
+        color: #adb5bd;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+.contact-info {
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+        color: #adb5bd;
+        font-size: 0.9rem;
+
+        mat-icon {
+            color: #E08F7E;
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+        }
+    }
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+
+    li {
+        margin: 0.5rem 0;
+    }
+
+    a {
+        color: #adb5bd;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+
+        &:hover {
+            color: white;
+        }
+    }
+}
+
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    color: #adb5bd;
+    font-size: 0.9rem;
+
+    p {
+        margin: 0.5rem 0;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem 1rem 1rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .newsletter-form {
+        align-items: center;
+
+        mat-form-field {
+            max-width: 300px;
+        }
+
+        button {
+            max-width: 300px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-info .contact-item {
+        font-size: 0.8rem;
+
+        mat-icon {
+            width: 18px;
+            height: 18px;
+            font-size: 18px;
+        }
+    }
+
+    .footer-links a {
+        font-size: 0.85rem;
+    }
+
+    .newsletter p {
+        font-size: 0.8rem;
+    }
+}
