@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home';
 import { BreedsComponent } from './pages/breeds/breeds';
 import { BreedDetailComponent } from './pages/breed-detail/breed-detail';
+import { CatsComponent } from './pages/cats/cats';
+import { CatDetailComponent } from './pages/cat-detail/cat-detail';
 
 export const routes: Routes = [
   {
@@ -15,5 +17,13 @@ export const routes: Routes = [
   {
     path: 'breeds/:id',
     component: BreedDetailComponent
-  }
+  },
+  {
+    path: 'cats',
+    component: CatsComponent
+  },
+  {
+    path: 'cats/:id',
+    component: CatDetailComponent
+  },
 ];

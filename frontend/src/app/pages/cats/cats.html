@@ -1,0 +1,52 @@
+<div class="cats-page">
+    <div class="page-header">
+        <h1>Find Your Perfect Companion</h1>
+        <p>Browse through all available cats looking for their forever homes</p>
+    </div>
+
+    <div class="search-section">
+        <app-search (filtersChanged)="onFiltersChanged($event)"></app-search>
+    </div>
+
+    <!-- Filter Tabs -->
+    <!-- <div class="filter-section">
+        <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
+            <mat-tab *ngFor="let tab of filterTabs" [label]="tab.label + ' (' + tab.count + ')'">
+            </mat-tab>
+        </mat-tab-group>
+    </div> -->
+
+    <!-- Results Info -->
+    <div class="results-info" *ngIf="!loading">
+        <p>Showing {{pagedCats.length}} of {{totalCats}} cats</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+        <p>Loading cats...</p>
+    </div>
+
+    <!-- Cats Grid -->
+    <div class="cats-grid" *ngIf="!loading">
+        <app-cat-card *ngFor="let item of pagedCats" [cat]="item">
+        </app-cat-card>
+    </div>
+
+    <!-- No Results -->
+    <div class="no-results" *ngIf="!loading && filteredCats.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <h3>No cats found</h3>
+        <p>Try adjusting your search filters or check back later for new arrivals.</p>
+        <button class="adopt-button" (click)="clearFilters()">
+            Clear All Filters
+        </button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="!loading && totalCats > pageSize">
+        <mat-paginator [length]="totalCats" [pageSize]="pageSize" [pageIndex]="pageIndex"
+            [pageSizeOptions]="[6, 12, 24, 48]" (page)="onPageChange($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>
