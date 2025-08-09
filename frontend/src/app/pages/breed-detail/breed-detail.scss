@@ -1,0 +1,443 @@
+.breed-detail-page {
+    margin-top: 64px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.breed-hero {
+    background: linear-gradient(135deg, #E08F7E 0%, #d67b6a 100%);
+    padding: 4rem 2rem;
+    color: whitesmoke;
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .breed-image-container {
+        .breed-hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .placeholder-hero-image {
+            width: 100%;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+
+            mat-icon {
+                font-size: 8rem;
+                width: 8rem;
+                height: 8rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+    }
+
+    .breed-info {
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        p {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+
+            mat-icon {
+                color: rgba(255, 255, 255, 0.8);
+            }
+        }
+    }
+}
+
+.breed-description,
+.breed-temperament,
+.breed-characteristics,
+.available-cats,
+.care-tips,
+.breed-navigation {
+    padding: 2rem 0;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #323e51;
+}
+
+.description-card,
+.temperament-card,
+.characteristics-card,
+.care-card {
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+    .description-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #323e51;
+    }
+}
+
+.temperament-chips {
+    .temperament-chip {
+        margin: 0.25rem;
+        font-size: 0.9rem;
+        background: #E08F7E;
+        color: white;
+
+        &:hover {
+            background: #d67b6a;
+        }
+    }
+}
+
+.characteristics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+
+    .characteristic-item {
+        .characteristic-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+
+            mat-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 24px;
+
+                &.child-friendly {
+                    color: #28a745;
+                }
+
+                &.dog-friendly {
+                    color: #17a2b8;
+                }
+
+                &.energy {
+                    color: #ffc107;
+                }
+
+                &.grooming {
+                    color: #6f42c1;
+                }
+
+                &.health {
+                    color: #dc3545;
+                }
+
+                &.intelligence {
+                    color: #20c997;
+                }
+
+                &.shedding {
+                    color: #fd7e14;
+                }
+
+                &.social {
+                    color: #e83e8c;
+                }
+
+                &.stranger {
+                    color: #6610f2;
+                }
+
+                &.vocal {
+                    color: #007bff;
+                }
+
+                &.adaptability {
+                    color: #795548;
+                }
+
+                &.affection {
+                    color: #e91e63;
+                }
+            }
+
+            .characteristic-label {
+                flex: 1;
+                font-weight: 600;
+                color: #323e51;
+            }
+
+            .characteristic-value {
+                font-weight: 600;
+                color: #E08F7E;
+            }
+        }
+
+        mat-progress-bar {
+            margin-bottom: 0.5rem;
+            height: 8px;
+            border-radius: 4px;
+
+            &.child-friendly-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #28a745;
+            }
+
+            &.dog-friendly-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #17a2b8;
+            }
+
+            &.energy-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #ffc107;
+            }
+
+            &.grooming-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #6f42c1;
+            }
+
+            &.health-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #dc3545;
+            }
+
+            &.intelligence-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #20c997;
+            }
+
+            &.shedding-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #fd7e14;
+            }
+
+            &.social-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #e83e8c;
+            }
+
+            &.stranger-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #6610f2;
+            }
+
+            &.vocal-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #007bff;
+            }
+
+            &.adaptability-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #795548;
+            }
+            
+            &.affection-bar ::ng-deep .mat-progress-bar-fill::after {
+                background: #e91e63;
+            }
+        }
+
+        .characteristic-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+    }
+}
+
+.cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    .cat-preview-card {
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 16px;
+        overflow: hidden;
+
+        &:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .cat-image {
+            height: 200px;
+            overflow: hidden;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .placeholder-image {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+
+                mat-icon {
+                    font-size: 3rem;
+                    width: 3rem;
+                    height: 3rem;
+                }
+            }
+        }
+
+        mat-card-content {
+            padding: 1.5rem;
+
+            h3 {
+                color: #323e51;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+
+            p {
+                color: #6c757d;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .cat-description {
+                line-height: 1.5;
+            }
+        }
+
+        mat-card-actions {
+            padding: 0 1.5rem 1.5rem;
+        }
+    }
+}
+
+.view-all-container {
+    text-align: center;
+}
+
+.care-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+
+    .care-tip {
+        text-align: center;
+
+        .tip-icon {
+            font-size: 3rem;
+            width: 3rem;
+            height: 3rem;
+            color: #E08F7E;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            color: #323e51;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+    }
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.loading-container,
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    color: #6c757d;
+
+    mat-icon {
+        font-size: 4rem;
+        width: 4rem;
+        height: 4rem;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+
+    h2 {
+        color: #323e51;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 968px) {
+    .breed-hero .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .characteristics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navigation-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .breed-hero {
+        padding: 2rem 1rem;
+
+        .breed-info h1 {
+            font-size: 2.5rem;
+        }
+    }
+
+    .breed-description,
+    .breed-temperament,
+    .breed-characteristics,
+    .available-cats,
+    .care-tips,
+    .breed-navigation {
+        padding: 2rem 0;
+    }
+
+    .cats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .care-tips-grid {
+        grid-template-columns: 1fr;
+    }
+}

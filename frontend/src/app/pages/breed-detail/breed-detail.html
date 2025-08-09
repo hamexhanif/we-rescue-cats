@@ -1,0 +1,283 @@
+<div class="breed-detail-page" *ngIf="!loading && breed">
+    <section class="breed-hero">
+        <div class="hero-content">
+            <div class="breed-image-container">
+                <img *ngIf="breed.imageUrl" [src]="breed.imageUrl" [alt]="breed.name" class="breed-hero-image">
+                <div *ngIf="!breed.imageUrl" class="placeholder-hero-image">
+                    <mat-icon>pets</mat-icon>
+                </div>
+            </div>
+
+            <div class="breed-info">
+                <h1>{{breed.name}}</h1>
+                <h2>{{breed.origin}}</h2>
+            </div>
+        </div>
+    </section>
+
+    <section class="breed-description">
+        <div class="container">
+            <mat-card class="description-card">
+                <mat-card-header>
+                    <mat-card-title>About {{breed.name}}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <p class="description-text">{{breed.description}}</p>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </section>
+
+    <section class="breed-characteristics">
+        <div class="container">
+            <mat-card class="characteristics-card">
+                <mat-card-header>
+                    <mat-card-title>Breed Characteristics</mat-card-title>
+                    <mat-card-subtitle>Ratings are on a scale of 1-5 (1 = Low, 5 = High)</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="characteristics-grid">
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="child-friendly">child_care</mat-icon>
+                                <span class="characteristic-label">Child Friendly</span>
+                                <span class="characteristic-value">{{breed.childFriendly}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.childFriendly * 20"
+                                class="child-friendly-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getChildFriendlyDescription(breed.childFriendly)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="dog-friendly">pets</mat-icon>
+                                <span class="characteristic-label">Dog Friendly</span>
+                                <span class="characteristic-value">{{breed.dogFriendly}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.dogFriendly * 20"
+                                class="dog-friendly-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getDogFriendlyDescription(breed.dogFriendly)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="energy">bolt</mat-icon>
+                                <span class="characteristic-label">Energy Level</span>
+                                <span class="characteristic-value">{{breed.energyLevel}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.energyLevel * 20"
+                                class="energy-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getEnergyLevelDescription(breed.energyLevel)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="grooming">content_cut</mat-icon>
+                                <span class="characteristic-label">Grooming Needs</span>
+                                <span class="characteristic-value">{{breed.grooming}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.grooming * 20"
+                                class="grooming-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getGroomingDescription(breed.grooming)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="health">local_hospital</mat-icon>
+                                <span class="characteristic-label">Health Issues</span>
+                                <span class="characteristic-value">{{breed.healthIssues}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.healthIssues * 20"
+                                class="health-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getHealthDescription(breed.healthIssues)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="intelligence">psychology</mat-icon>
+                                <span class="characteristic-label">Intelligence</span>
+                                <span class="characteristic-value">{{breed.intelligence}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.intelligence * 20"
+                                class="intelligence-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getIntelligenceDescription(breed.intelligence)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="social">groups</mat-icon>
+                                <span class="characteristic-label">Social Needs</span>
+                                <span class="characteristic-value">{{breed.socialNeeds}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.socialNeeds * 20"
+                                class="social-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getSocialNeedsDescription(breed.socialNeeds)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="stranger">person_add</mat-icon>
+                                <span class="characteristic-label">Stranger Friendly</span>
+                                <span class="characteristic-value">{{breed.strangerFriendly}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.strangerFriendly * 20"
+                                class="stranger-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getStrangerFriendlyDescription(breed.strangerFriendly)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="adaptability">settings</mat-icon>
+                                <span class="characteristic-label">Adaptability</span>
+                                <span class="characteristic-value">{{breed.adaptability}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.adaptability * 20"
+                                class="adaptability-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getAdaptabilityDescription(breed.adaptability)}}
+                            </p>
+                        </div>
+
+                        <div class="characteristic-item">
+                            <div class="characteristic-header">
+                                <mat-icon class="affection">favorite</mat-icon>
+                                <span class="characteristic-label">Affection Level</span>
+                                <span class="characteristic-value">{{breed.affectionLevel}}/5</span>
+                            </div>
+                            <mat-progress-bar mode="determinate" [value]="breed.affectionLevel * 20"
+                                class="affection-bar">
+                            </mat-progress-bar>
+                            <p class="characteristic-description">
+                                {{getAffectionLevelDescription(breed.affectionLevel)}}
+                            </p>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </section>
+
+    <section class="available-cats" *ngIf="availableCats.length > 0">
+        <div class="container">
+            <h2 class="section-title">Available {{breed.name}} Cats for Adoption</h2>
+            <div class="cats-grid">
+                <mat-card class="cat-preview-card" *ngFor="let cat of availableCats" [routerLink]="['/cats', cat.id]">
+                    <div class="cat-image">
+                        <img *ngIf="cat.imageUrl" [src]="cat.imageUrl" [alt]="cat.name">
+                        <div *ngIf="!cat.imageUrl" class="placeholder-image">
+                            <mat-icon>pets</mat-icon>
+                        </div>
+                    </div>
+                    <mat-card-content>
+                        <h3>{{cat.name}}</h3>
+                        <p>{{cat.age}} years • {{cat.gender}} • {{cat.address}}</p>
+                        <p class="cat-description">{{cat.description | slice:0:100}}{{cat.description.length > 100 ?
+                            '...' : ''}}</p>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button mat-button color="primary">
+                            <mat-icon>visibility</mat-icon>
+                            View Details
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+
+            <div class="view-all-container">
+                <button mat-raised-button color="primary" [routerLink]="['/cats']" [queryParams]="{breed: breed.name}">
+                    View All {{breed.name}} Cats
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="care-tips">
+        <div class="container">
+            <mat-card class="care-card">
+                <mat-card-header>
+                    <mat-card-title>{{breed.name}} Care Tips</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="care-tips-grid">
+                        <div class="care-tip">
+                            <mat-icon class="tip-icon">restaurant</mat-icon>
+                            <h4>Feeding</h4>
+                            <p>{{getFeedingTips()}}</p>
+                        </div>
+
+                        <div class="care-tip">
+                            <mat-icon class="tip-icon">content_cut</mat-icon>
+                            <h4>Grooming</h4>
+                            <p>{{getGroomingTips()}}</p>
+                        </div>
+
+                        <div class="care-tip">
+                            <mat-icon class="tip-icon">fitness_center</mat-icon>
+                            <h4>Exercise</h4>
+                            <p>{{getExerciseTips()}}</p>
+                        </div>
+
+                        <div class="care-tip">
+                            <mat-icon class="tip-icon">local_hospital</mat-icon>
+                            <h4>Health</h4>
+                            <p>{{getHealthTips()}}</p>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </section>
+
+    <section class="breed-navigation">
+        <div class="container">
+            <div class="navigation-buttons">
+                <button mat-raised-button routerLink="/breeds">
+                    Back to All Breeds
+                </button>
+                <button mat-raised-button color="primary" routerLink="/cats">
+                    Find Cats to Adopt
+                </button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading breed information...</p>
+</div>
+
+<div class="error-container" *ngIf="!loading && !breed">
+    <mat-icon>error_outline</mat-icon>
+    <h2>Breed Not Found</h2>
+    <p>The breed you're looking for doesn't exist or couldn't be loaded.</p>
+    <button mat-raised-button color="primary" routerLink="/breeds">
+        Browse All Breeds
+    </button>
+</div>
