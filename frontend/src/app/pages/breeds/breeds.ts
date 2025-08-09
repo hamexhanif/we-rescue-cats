@@ -36,7 +36,7 @@ export class BreedsComponent implements OnInit {
   }
 
   loadBreeds() {
-    this.catService.getTheCatApiBreeds().subscribe({
+    this.catService.getTheCatBreeds().subscribe({
       next: (breeds) => {
         this.breeds = breeds;
         this.loading = false;

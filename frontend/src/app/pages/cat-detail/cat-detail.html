@@ -1,0 +1,72 @@
+<div class="cat-detail-page" *ngIf="!loading && cat">
+    <div class="cat-detail-container">
+        <div class="cat-image-section">
+            <div class="main-image">
+                <img *ngIf="cat.imageUrl" [src]="cat.imageUrl" [alt]="cat.name">
+                <div *ngIf="!cat.imageUrl" class="placeholder-image">
+                    <mat-icon>pets</mat-icon>
+                </div>
+            </div>
+        </div>
+
+        <div class="cat-info-section">
+            <div class="cat-header">
+                <h1>{{cat.name}}</h1>
+                <p class="cat-subtitle">{{cat.breedName}} • {{cat.age}} years old • {{cat.gender}} • {{cat.address}}</p>
+            </div>
+
+            <div class="cat-actions" *ngIf="cat.adoptionStatus === 'AVAILABLE'">
+                <button mat-raised-button class="adopt-btn" (click)="openAdoptionForm()">
+                    Adopt {{cat.name}}
+                </button>
+            </div>
+
+            <div class="unavailable-message" *ngIf="cat.adoptionStatus !== 'AVAILABLE'">
+                <mat-icon>info</mat-icon>
+                <p>This cat is currently {{cat.adoptionStatus.toLowerCase()}} and not available for adoption.</p>
+            </div>
+
+            <mat-card class="info-card">
+                <mat-card-header>
+                    <mat-card-title>About {{cat.name}}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <p class="description">{{cat.description}}</p>
+
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <strong>Age:</strong>
+                            <span>{{cat.age}} years old</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Gender:</strong>
+                            <span>{{cat.gender}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Breed:</strong>
+                            <span>{{cat.breedName}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Address:</strong>
+                            <span>{{cat.address}}</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading cat details...</p>
+</div>
+
+<div class="error-container" *ngIf="!loading && !cat">
+    <mat-icon>error_outline</mat-icon>
+    <h2>Cat Not Found</h2>
+    <p>The cat you're looking for doesn't exist or has been removed.</p>
+    <button mat-raised-button color="primary" routerLink="/cats">
+        Browse Other Cats
+    </button>
+</div>

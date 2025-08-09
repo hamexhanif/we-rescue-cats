@@ -42,13 +42,13 @@ export class BreedDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       const breedId = params['id'];
       this.loadBreed(breedId);
-      this.loadAvailableCats(breedId);
+      // this.loadAvailableCats();
     });
   }
 
   loadBreed(id: string) {
     this.loading = true;
-    this.catService.getTheCatApiBreeds().subscribe({
+    this.catService.getTheCatBreeds().subscribe({
       next: (breeds) => {
         this.breed = breeds.find(breed => breed.id === id) || null;
         this.loading = false;
@@ -60,19 +60,19 @@ export class BreedDetailComponent implements OnInit {
     });
   }
 
-  loadAvailableCats(breedId: string) {
-    // Filter cats by breed
-    this.catService.getAllCats({ breed: breedId }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.availableCats = response.data.slice(0, 6);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading cats:', error);
-      }
-    });
-  }
+  // loadAvailableCats(breedId: string) {
+  //   // Filter cats by breed
+  //   this.catService.getAllCats({ breed: breedId }).subscribe({
+  //     next: (response) => {
+  //       if (response.success) {
+  //         this.availableCats = response.data.slice(0, 6);
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error loading cats:', error);
+  //     }
+  //   });
+  // }
 
   getChildFriendlyDescription(rating: number): string {
     const descriptions = [
