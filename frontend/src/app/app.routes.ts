@@ -4,6 +4,7 @@ import { BreedsComponent } from './pages/breeds/breeds';
 import { BreedDetailComponent } from './pages/breed-detail/breed-detail';
 import { CatsComponent } from './pages/cats/cats';
 import { CatDetailComponent } from './pages/cat-detail/cat-detail';
+import { LoginComponent } from './pages/auth/login/login';
 
 export const routes: Routes = [
   {
@@ -26,4 +27,8 @@ export const routes: Routes = [
     path: 'cats/:id',
     component: CatDetailComponent
   },
+  {
+    path: 'login',
+    component: LoginComponent
+  }
 ];
