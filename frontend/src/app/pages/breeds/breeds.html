@@ -1,0 +1,49 @@
+<div class="breeds-page">
+    <div class="page-header">
+        <h1>Cat Breeds</h1>
+        <p>Learn about different cat breeds and their characteristics</p>
+    </div>
+
+    <div class="loading-container" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+        <p>Loading breeds...</p>
+    </div>
+
+    <div class="breeds-grid" *ngIf="!loading">
+        <mat-card class="breed-card" *ngFor="let breed of breeds" [routerLink]="['/breeds', breed.id]">
+            <div class="breed-image">
+                <img *ngIf="breed.imageUrl" [src]="breed.imageUrl" [alt]="breed.name">
+                <div *ngIf="!breed.imageUrl" class="placeholder-image">
+                    <mat-icon>pets</mat-icon>
+                </div>
+            </div>
+
+            <mat-card-content>
+                <h3>{{breed.name}}</h3>
+                <p class="breed-description">{{breed.description | slice:0:120}}{{breed.description.length > 120 ? '...'
+                    : ''}}</p>
+
+                <div class="breed-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Child Friendly:</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" [style.width.%]="breed.childFriendly * 20"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Dog Friendly:</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" [style.width.%]="breed.dogFriendly * 20"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Energy Level:</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" [style.width.%]="breed.energyLevel * 20"></div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
