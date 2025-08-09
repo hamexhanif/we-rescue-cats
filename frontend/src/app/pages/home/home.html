@@ -1,0 +1,114 @@
+<div class="home-container">
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Give a Street Cat a Forever Home</h1>
+            <p>Connect with rescue cats in your area and find your perfect companion. Every adoption saves a life.</p>
+            <button mat-raised-button color="primary" class="hero-cta" routerLink="/cats">
+                Find Your Cat
+            </button>
+        </div>
+
+        <app-stats [stats]="stats"></app-stats>
+    </section>
+
+    <section class="featured-cats">
+        <div class="container">
+            <h2 class="section-title">Cats Looking for Homes</h2>
+            <p class="section-subtitle">These adorable cats are ready to find their forever families</p>
+
+            <div class="cats-grid" *ngIf="!loading">
+                <app-cat-card *ngFor="let cat of featuredCats" [cat]="cat">
+                </app-cat-card>
+            </div>
+
+            <div class="loading-container" *ngIf="loading">
+                <mat-spinner></mat-spinner>
+                <p>Loading cats...</p>
+            </div>
+
+            <div class="view-all-container">
+                <button mat-raised-button color="primary" routerLink="/cats">
+                    View All Available Cats
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Adoption Works</h2>
+            <p class="section-subtitle">Simple steps to find and adopt your perfect companion</p>
+
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-icon">
+                        <mat-icon>search</mat-icon>
+                    </div>
+                    <h3>Search & Browse</h3>
+                    <p>Browse through our available cats, filter by breed, age, location, and special traits to find
+                        your perfect match.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">
+                        <mat-icon>assignment_turned_in</mat-icon>
+                    </div>
+                    <h3>Register & Apply</h3>
+                    <p>Register as a user and complete our simple adoption application. We'll verify your information and ensure a good match
+                        for both you and the cat.</p>
+                </div>
+               
+                <div class="step">
+                    <div class="step-icon">
+                        <mat-icon>home</mat-icon>
+                    </div>
+                    <h3>Welcome Home</h3>
+                    <p>Take your new family member home! We provide ongoing support and resources to help with the
+                        transition.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="breeds-preview">
+        <div class="container">
+            <h2 class="section-title">Explore Cat Breeds</h2>
+            <p class="section-subtitle">Learn about different cat breeds and their characteristics</p>
+
+            <div class="breeds-grid">
+                <div class="breed-card" *ngFor="let breed of popularBreeds" [routerLink]="['/breeds', breed.id]" role="button" tabindex="0">
+                    <img *ngIf="breed.imageUrl" [src]="breed.imageUrl" [alt]="breed.name">
+                    <div *ngIf="!breed.imageUrl" class="breed-image">
+                        <mat-icon>pets</mat-icon>
+                    </div>
+                    <h4>{{breed.name}}</h4>
+                    <p>Click to learn more about this breed</p>
+                </div>
+            </div>
+
+            <div class="view-all-container">
+                <button mat-raised-button color="primary" routerLink="/breeds">
+                    Explore All Breeds
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="success-stories">
+        <div class="container">
+            <h2 class="section-title">Happy Tails</h2>
+            <p class="section-subtitle">Stories from our successful adoptions</p>
+
+            <div class="stories-grid">
+                <mat-card class="story-card" *ngFor="let story of successStories">
+                    <div class="story-icon">
+                        <mat-icon>format_quote</mat-icon>
+                    </div>
+                    <p>"{{story.quote}}"</p>
+                    <strong>- {{story.author}}</strong>
+                    <div class="adopted-info">{{story.adoptedInfo}}</div>
+                </mat-card>
+            </div>
+        </div>
+    </section>
+</div>

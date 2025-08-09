@@ -1,0 +1,308 @@
+.home-container {
+    margin-top: 64px;
+}
+
+.hero {
+    background-image: linear-gradient(135deg, #E08F7E 0%, #d67b6a 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 8rem 2rem 6rem;
+    text-align: center;
+    color: whitesmoke;
+    min-height: 600px;
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-cta {
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background: #323e51;
+            color: whitesmoke;
+
+            &:hover {
+                transform: scale(1.02);
+              }
+        }
+    }
+}
+
+.quick-search-section {
+    margin-top: -50px;
+    position: relative;
+    z-index: 100;
+    padding: 0 2rem;
+}
+
+.featured-cats,
+.how-it-works,
+.breeds-preview,
+.success-stories {
+    padding: 4rem 0;
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+}
+
+.map-section {
+    background: whitesmoke;
+    padding: 4rem 2rem;
+    margin: 4rem 0;
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #323e51;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.filter-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+
+    .filter-tab {
+        border-radius: 50px;
+
+        &.active {
+            background: #E08F7E;
+            color: whitesmoke;
+        }
+    }
+}
+
+.cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+
+    p {
+        margin-top: 1rem;
+        color: #6c757d;
+    }
+}
+
+.view-all-container {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem;
+
+    .step {
+        text-align: center;
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: #E08F7E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: whitesmoke;
+
+            mat-icon {
+                font-size: 2rem;
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #323e51;
+        }
+
+        p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+    }
+}
+
+.breeds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+
+    .breed-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 16px;
+        text-align: center;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+            transform: translateY(-5px);
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 25%;
+            object-fit: cover;
+            object-position: center;
+            overflow: hidden;
+        }
+
+        .breed-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #E08F7E, #d67b6a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: whitesmoke;
+
+            img {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                object-position: center;
+                display: block;
+            }
+
+            mat-icon {
+                font-size: 3rem;
+                width: 3rem;
+                height: 3rem;
+            }
+        }
+
+        h4 {
+            margin-bottom: 0.5rem;
+            color: #323e51;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    }
+}
+
+.stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+
+    .story-card {
+        padding: 2rem;
+        text-align: center;
+        border-radius: 16px;
+
+        .story-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #E08F7E, #d67b6a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: whitesmoke;
+
+            mat-icon {
+                font-size: 2rem;
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+
+        p {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #323e51;
+            line-height: 1.6;
+        }
+
+        strong {
+            color: #323e51;
+            font-weight: 600;
+        }
+
+        .adopted-info {
+            margin-top: 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .hero .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .cats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .breeds-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stories-grid {
+        grid-template-columns: 1fr;
+    }
+}
