@@ -4,13 +4,11 @@ import io.werescuecats.backend.config.CatApiConfig;
 import io.werescuecats.backend.dto.BreedDto;
 import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.repository.BreedRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,16 +24,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class BreedService {
     
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
     
-    @Autowired
-    private CatApiConfig config;
+    private final CatApiConfig config;
     
-    @Autowired
-    private BreedRepository breedRepository;
+    private final BreedRepository breedRepository;
     
     /**
      * Fetch all breeds from TheCatAPI and sync with local database
@@ -96,14 +92,15 @@ public class BreedService {
         breed.setStrangerFriendly(apiBreed.getStrangerFriendly());
         breed.setWikipediaUrl(apiBreed.getWikipediaUrl());
         breed.setReferenceImageId(apiBreed.getReferenceImageId());
+        breed.setImageUrl(apiBreed.getImageUrl());
         
-        if (apiBreed.getImageUrl() != null) {
-            breed.setImageUrl(apiBreed.getImageUrl());
-        }
+        // if (apiBreed.getImageUrl() != null) {
+        //     breed.setImageUrl(apiBreed.getImageUrl());
+        // }
     }
     
-    public Page<Breed> getAllBreeds(Pageable pageable) {
-        return breedRepository.findAll(pageable);
+    public List<Breed> getAllBreeds() {
+        return breedRepository.findAll();
     }
     
     @Cacheable("breed")

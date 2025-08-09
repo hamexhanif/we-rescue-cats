@@ -27,6 +27,9 @@ public class Cat {
     
     @Column(name = "age")
     private Integer age;
+
+    @Column(name = "gender")
+    private String gender;
     
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

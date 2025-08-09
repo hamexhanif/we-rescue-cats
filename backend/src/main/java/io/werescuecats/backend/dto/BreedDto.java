@@ -1,5 +1,7 @@
 package io.werescuecats.backend.dto;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -49,4 +51,9 @@ public class BreedDto {
     
     @JsonProperty("image_url")
     private String imageUrl;
+    
+    @JsonProperty("image")
+    private void unpackImage(Map<String, Object> image) {
+        this.imageUrl = (String) image.get("url");
+    }
 }

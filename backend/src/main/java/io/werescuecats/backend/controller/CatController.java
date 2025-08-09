@@ -1,15 +1,11 @@
 package io.werescuecats.backend.controller;
 
 import io.werescuecats.backend.dto.CatDto;
-import io.werescuecats.backend.dto.CatSummaryDto;
 import io.werescuecats.backend.dto.StatusUpdateRequestDto;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.service.CatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,21 +24,21 @@ public class CatController {
     private CatService catService;
     
     @GetMapping("/available")
-    public ResponseEntity<List<CatSummaryDto>> getAvailableCats() {
+    public ResponseEntity<List<CatDto>> getAvailableCats() {
         log.info("Fetching available cats");
         List<Cat> cats = catService.getAvailableCats();
-        List<CatSummaryDto> catDtos = cats.stream()
-            .map(this::toSummaryDto)
+        List<CatDto> catDtos = cats.stream()
+            .map(this::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
     
     @GetMapping("/breed/{breedId}")
-    public ResponseEntity<List<CatSummaryDto>> getCatsByBreed(@PathVariable String breedId) {
+    public ResponseEntity<List<CatDto>> getCatsByBreed(@PathVariable String breedId) {
         log.info("Fetching cats for breed: {}", breedId);
         List<Cat> cats = catService.getCatsByBreed(breedId);
-        List<CatSummaryDto> catDtos = cats.stream()
-            .map(this::toSummaryDto)
+        List<CatDto> catDtos = cats.stream()
+            .map(this::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
@@ -52,43 +48,42 @@ public class CatController {
      * GET /api/cats/area?lat={value}&lon={value}&radius={value}
      */
     @GetMapping("/area")
-    public ResponseEntity<List<CatSummaryDto>> getCatsInArea(
+    public ResponseEntity<List<CatDto>> getCatsInArea(
             @RequestParam Double lat,
             @RequestParam Double lon,
             @RequestParam(defaultValue = "10.0") Double radius) {
         
         log.info("Fetching cats in area: lat={}, lon={}, radius={}", lat, lon, radius);
         List<Cat> cats = catService.getCatsInArea(lat, lon, radius);
-        List<CatSummaryDto> catDtos = cats.stream()
-            .map(this::toSummaryDto)
+        List<CatDto> catDtos = cats.stream()
+            .map(this::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
 
-    @GetMapping("/pending")
+    @GetMapping("/admin/pending")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CatSummaryDto>> getPendingCats() {
+    public ResponseEntity<List<CatDto>> getPendingCats() {
         log.info("Fetching pending cats");
         List<Cat> cats = catService.getPendingCats();
-        List<CatSummaryDto> catDtos = cats.stream()
-            .map(this::toSummaryDto)
+        List<CatDto> catDtos = cats.stream()
+            .map(this::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
 
-    @GetMapping("/adopted")
+    @GetMapping("/admin/adopted")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CatSummaryDto>> getAdoptedCats() {
+    public ResponseEntity<List<CatDto>> getAdoptedCats() {
         log.info("Fetching available cats");
         List<Cat> cats = catService.getAdoptedCats();
-        List<CatSummaryDto> catDtos = cats.stream()
-            .map(this::toSummaryDto)
+        List<CatDto> catDtos = cats.stream()
+            .map(this::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
     
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CatDto> getCatById(@PathVariable Long id) {
         log.info("Fetching cat with ID: {}", id);
         Optional<Cat> cat = catService.getCatById(id);
@@ -99,16 +94,18 @@ public class CatController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<CatSummaryDto>> getAllCats(@PageableDefault(size = 10) Pageable pageable) {
-        log.info("Fetching paginated cats, page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
-        Page<Cat> cats = catService.getAllCats(pageable);
-        Page<CatSummaryDto> catDtos = cats.map(this::toSummaryDto);
+    public ResponseEntity<List<CatDto>> getAllCats() {
+        log.info("Fetching all cats");
+        List<Cat> cats = catService.getAllCats();
+        List<CatDto> catDtos = cats.stream()
+                                   .map(this::toDto)
+                                   .collect(Collectors.toList());
         return ResponseEntity.ok(catDtos);
     }
     
-    @PostMapping
+    @PostMapping("/admin/create")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CatDto> createCat(@RequestBody Cat cat) {
         log.info("Creating new cat: {}", cat.getName());
@@ -122,7 +119,7 @@ public class CatController {
         }
     }
     
-    @PutMapping("/{id}/status")
+    @PutMapping("/admin/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CatDto> updateCatStatus(@PathVariable Long id, 
                                                @RequestBody StatusUpdateRequestDto request) {
@@ -147,6 +144,7 @@ public class CatController {
             .id(cat.getId())
             .name(cat.getName())
             .age(cat.getAge())
+            .gender(cat.getGender())
             .description(cat.getDescription())
             .breedId(cat.getBreed() != null ? cat.getBreed().getId() : null)
             .breedName(cat.getBreed() != null ? cat.getBreed().getName() : null)
@@ -157,22 +155,6 @@ public class CatController {
             .status(cat.getStatus())
             .createdAt(cat.getCreatedAt())
             .updatedAt(cat.getUpdatedAt())
-            .build();
-    }
-
-    public CatSummaryDto toSummaryDto(Cat cat) {
-        if (cat == null) {
-            return null;
-        }
-        
-        return CatSummaryDto.builder()
-            .id(cat.getId())
-            .name(cat.getName())
-            .age(cat.getAge())
-            .breedName(cat.getBreed() != null ? cat.getBreed().getName() : null)
-            .imageUrl(cat.getImageUrl())
-            .address(cat.getAddress())
-            .status(cat.getStatus())
             .build();
     }
 }

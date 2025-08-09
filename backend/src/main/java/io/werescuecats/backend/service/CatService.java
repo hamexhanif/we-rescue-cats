@@ -1,25 +1,34 @@
 package io.werescuecats.backend.service;
 
+import io.werescuecats.backend.config.CatApiConfig;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.entity.CatStatus;
 import io.werescuecats.backend.repository.CatRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class CatService {
     
-    @Autowired
-    private CatRepository catRepository;
+    private final CatRepository catRepository;
+
+    private final CatApiConfig config;
+
+    private final RestTemplate restTemplate;
     
     @Cacheable("availableCats")
     public List<Cat> getAvailableCats() {
@@ -62,6 +71,7 @@ public class CatService {
     @Transactional
     public Cat saveCat(Cat cat) {
         log.info("Saving cat: {}", cat.getName());
+        cat.setImageUrl(fetchImageUrlForSpecificBreed(cat.getBreed().getId()));
         return catRepository.save(cat);
     }
     
@@ -75,12 +85,43 @@ public class CatService {
         }
         throw new RuntimeException("Cat not found with id: " + catId);
     }
-    
-    public Page<Cat> getAllCats(Pageable pageable) {
-        return catRepository.findAll(pageable);
-    }
 
     public List<Cat> getAllCats() {
         return catRepository.findAll();
+    }
+
+    @Transactional
+    public String fetchImageUrlForSpecificBreed(String breedId) {
+        log.info("Fetching image URL for breed: {}", breedId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-api-key", config.getApiKey());
+        headers.set("User-Agent", "WeRescueCats/1.0");
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        try {
+            String url = config.getBaseUrl() + "/images/search?limit=1&breed_ids=" + breedId;
+
+            ResponseEntity<Map[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Map[].class);
+
+            Map[] images = response.getBody();
+
+            if (images != null && images.length > 0) {
+                String imageUrl = (String) images[0].get("url");
+                log.info("Found image URL: {}", imageUrl);
+                return imageUrl;
+            }
+
+            log.warn("No images found for breed: {}", breedId);
+            return null;
+
+        } catch (Exception e) {
+            log.error("Failed to fetch image URL for breed: {}", breedId, e);
+            throw new RuntimeException("API call failed", e);
+        }
     }
 }

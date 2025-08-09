@@ -12,6 +12,7 @@ public class CatDto {
     private Long id;
     private String name;
     private Integer age;
+    private String gender;
     private String description;
     private String breedId;
     private String breedName;

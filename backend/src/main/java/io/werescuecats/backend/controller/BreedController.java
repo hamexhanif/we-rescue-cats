@@ -5,14 +5,12 @@ import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.service.BreedService;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/breeds")
@@ -27,10 +25,12 @@ public class BreedController {
     }
     
     @GetMapping
-    public ResponseEntity<Page<BreedDto>> getAllBreeds(@PageableDefault(size = 10) Pageable pageable) {
-        log.info("Fetching paginated breeds, page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
-        Page<Breed> breedPage = breedService.getAllBreeds(pageable);
-        Page<BreedDto> dtoPage = breedPage.map(this::toDto);
+    public ResponseEntity<List<BreedDto>> getAllBreeds() {
+        log.info("Fetching breeds");
+        List<Breed> breedPage = breedService.getAllBreeds();
+        List<BreedDto> dtoPage = breedPage.stream()
+                                          .map(this::toDto)
+                                          .collect(Collectors.toList());
         return ResponseEntity.ok(dtoPage);
     }
     

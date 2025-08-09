@@ -1,9 +1,7 @@
 package io.werescuecats.backend.controller;
 
-import io.werescuecats.backend.dto.LoginRequestDto;
-import io.werescuecats.backend.dto.LoginResponseDto;
+import io.werescuecats.backend.dto.RegisterRequestDto;
 import io.werescuecats.backend.dto.UserDto;
-import io.werescuecats.backend.dto.UserRegistrationDto;
 import io.werescuecats.backend.entity.User;
 import io.werescuecats.backend.entity.UserRole;
 import io.werescuecats.backend.exception.UserAlreadyExistsException;
@@ -28,41 +26,6 @@ public class UserController {
     
     @Autowired
     private UserService userService;
-
-    @PostMapping("/login")
-    @RequestMapping("/login")
-    public ResponseEntity<LoginResponseDto> loginUser(@RequestBody @Valid LoginRequestDto request) {
-        log.info("Login attempt for user: {}", request.getEmail());
-        
-        try {
-            Optional<User> userOpt = userService.authenticateUser(request.getEmail(), request.getPassword());
-            
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                userService.updateLastLogin(user.getId());
-                
-                LoginResponseDto response = new LoginResponseDto();
-                response.setSuccess(true);
-                response.setMessage("Login successful");
-                response.setUser(createSafeUserDto(user));
-                
-                return ResponseEntity.ok(response);
-            } else {
-                LoginResponseDto response = new LoginResponseDto();
-                response.setSuccess(false);
-                response.setMessage("Invalid credentials");
-                
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            }
-        } catch (Exception e) {
-            log.error("Error during login for user: {}", request.getEmail(), e);
-            LoginResponseDto response = new LoginResponseDto();
-            response.setSuccess(false);
-            response.setMessage("Login failed");
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
     
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -86,7 +49,7 @@ public class UserController {
     
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserRegistrationDto request) {
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody RegisterRequestDto request) {
         log.info("Registering new user: {}", request.getEmail());
         try {
             User user = createUserFromDto(request);
@@ -140,7 +103,7 @@ public class UserController {
         return dto;
     }
 
-    private User createUserFromDto(UserRegistrationDto dto) {
+    private User createUserFromDto(RegisterRequestDto dto) {
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setPasswordHash(dto.getPassword()); 
