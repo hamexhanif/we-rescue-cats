@@ -1,0 +1,145 @@
+.admin-dashboard {
+    padding: 2rem;
+    margin-top: 64px;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h1 {
+        color: #323e51;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: whitesmoke;
+        font-size: 1.1rem;
+    }
+}
+
+.stats-grid {
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+    cursor: default;
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // margin-right: 1rem;
+        margin-bottom: 1rem;
+
+        mat-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            color: whitesmoke;
+        }
+
+        &.cats {
+            background: #E08F7E;
+        }
+
+        &.applications {
+            background: #17a2b8;
+        }
+
+        &.users {
+            background: #28a745;
+        }
+
+        &.adopted {
+            background: #dc3545;
+        }
+    }
+
+    .stat-content {
+        text-align: center;
+        h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: #323e51;
+        }
+
+        p {
+            margin: 0;
+            color: #6c757d;
+            font-weight: 500;
+        }
+    }
+}
+
+.quick-actions {
+    h2 {
+        color: #323e51;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 16px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    mat-icon {
+        text-align: center;
+        font-size: 3rem;
+        width: 3rem;
+        height: 3rem;
+        color: #E08F7E;
+        margin-bottom: 1rem;
+    }
+
+    h3 {
+        color: #323e51;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: #6c757d;
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

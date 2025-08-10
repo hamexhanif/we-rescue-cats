@@ -1,0 +1,69 @@
+<div class="admin-applications-page">
+    <div class="page-header">
+        <h1>Adoption Applications</h1>
+        <div class="stats">
+            <span class="stat">Pending: {{pendingCount}}</span>
+            <span class="stat">Approved: {{approvedCount}}</span>
+            <span class="stat">Total: {{applications.length}}</span>
+        </div>
+    </div>
+
+    <mat-card class="applications-table-card">
+        <table mat-table [dataSource]="applications" class="applications-table">
+            <ng-container matColumnDef="applicant">
+                <th mat-header-cell *matHeaderCellDef>Applicant</th>
+                <td mat-cell *matCellDef="let app">
+                    <div class="applicant-cell">
+                        <strong>{{(app.user?.firstName + ' ' + app.user?.lastName).trim() || 'Unknown'}}</strong>
+                        <small>{{app.user?.email || 'No email'}}</small>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="cat">
+                <th mat-header-cell *matHeaderCellDef>Cat Name</th>
+                <td mat-cell *matCellDef="let app">{{app.cat?.name || 'Cat #' + app.cat?.id}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="submittedAt">
+                <th mat-header-cell *matHeaderCellDef>Submitted</th>
+                <td mat-cell *matCellDef="let app">{{app.adoptionDate | date:'short'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let app">
+                    <mat-chip [ngClass]="app.status?.toLowerCase() || 'unknown'">
+                        {{app.status || 'Unknown'}}
+                    </mat-chip>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let app">
+                    <button mat-button color="accent" (click)="approveApplication(app)"
+                        *ngIf="app.status === 'PENDING'">
+                        <mat-icon>check</mat-icon>
+                        Approve
+                    </button>
+                    
+                    <button mat-button color="primary" (click)="completeApplication(app)"
+                        *ngIf="app.status === 'APPROVED'">
+                        <mat-icon>check_circle</mat-icon>
+                        Complete
+                    </button>
+                    
+                    <button mat-button color="warn" (click)="rejectApplication(app)"
+                        *ngIf="app.status === 'PENDING'">
+                        <mat-icon>close</mat-icon>
+                        Reject
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </mat-card>
+</div>

@@ -1,0 +1,79 @@
+<div class="admin-dashboard">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage your cat rescue operations</p>
+    </div>
+
+    <mat-grid-list cols="4" rowHeight="200px" gutterSize="16px" class="stats-grid">
+        <mat-grid-tile>
+            <mat-card class="stat-card">
+                <div class="stat-icon cats">
+                    <mat-icon>pets</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <h3>{{stats.totalCats || 0}}</h3>
+                    <p>Total Cats</p>
+                </div>
+            </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+            <mat-card class="stat-card">
+                <div class="stat-icon applications">
+                    <mat-icon>assignment</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <h3>{{stats.pendingAdoptions || 0}}</h3>
+                    <p>Pending Applications</p>
+                </div>
+            </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+            <mat-card class="stat-card">
+                <div class="stat-icon users">
+                    <mat-icon>people</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <h3>{{stats.totalUsers || 0}}</h3>
+                    <p>Registered Users</p>
+                </div>
+            </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+            <mat-card class="stat-card">
+                <div class="stat-icon adopted">
+                    <mat-icon>favorite</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <h3>{{stats.adoptedCats || 0}}</h3>
+                    <p>Successfully Adopted</p>
+                </div>
+            </mat-card>
+        </mat-grid-tile>
+    </mat-grid-list>
+
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="actions-grid">
+            <mat-card class="action-card" routerLink="/admin/cats">
+                <mat-icon>pets</mat-icon>
+                <h3>Manage Cats</h3>
+                <p>Add, edit, or remove cats from the system</p>
+            </mat-card>
+
+            <mat-card class="action-card" routerLink="/admin/applications">
+                <mat-icon>assignment_turned_in</mat-icon>
+                <h3>Review Applications</h3>
+                <p>Process adoption applications</p>
+            </mat-card>
+
+            <mat-card class="action-card" routerLink="/admin/users">
+                <mat-icon>people</mat-icon>
+                <h3>Manage Users</h3>
+                <p>View and manage user accounts</p>
+            </mat-card>
+        </div>
+    </div>
+</div>
