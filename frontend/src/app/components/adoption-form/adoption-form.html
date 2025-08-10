@@ -1,0 +1,42 @@
+<div class="adoption-form-container">
+    <div class="form-header">
+        <h2>Adoption Application for {{data.cat.name}}</h2>
+        <p>Please fill out this form to apply for adopting {{data.cat.name}}</p>
+    </div>
+
+    <form [formGroup]="adoptionForm" (ngSubmit)="onSubmit()">
+        <div class="form-section">
+            <h3>Tell Us About Yourself</h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Experience with Cats</mat-label>
+                <textarea matInput formControlName="experienceWithCats" rows="4" required
+                    placeholder="Tell us about your experience with cats..."></textarea>
+                <mat-error *ngIf="adoptionForm.get('experienceWithCats')?.hasError('required')">
+                    Please describe your experience with cats
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Reason for Adoption</mat-label>
+                <textarea matInput formControlName="reasonForAdoption" rows="4" required
+                    placeholder="Why do you want to adopt {{data.cat.name}}?"></textarea>
+                <mat-error *ngIf="adoptionForm.get('reasonForAdoption')?.hasError('required')">
+                    Please tell us why you want to adopt this cat
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+            <button mat-button type="button" (click)="cancel()" [disabled]="loading">
+                Cancel
+            </button>
+
+            <button mat-raised-button color="primary" type="submit" [disabled]="!adoptionForm.valid || loading">
+                <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+                <span *ngIf="!loading">Submit Application</span>
+                <span *ngIf="loading">Submitting...</span>
+            </button>
+        </div>
+    </form>
+</div>
