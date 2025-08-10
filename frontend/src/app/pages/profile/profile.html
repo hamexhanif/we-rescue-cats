@@ -1,0 +1,94 @@
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>My Profile</h1>
+    </div>
+
+    <mat-tab-group>
+        <mat-tab label="Account Information">
+            <div class="tab-content">
+                <mat-card *ngIf="currentUser$ | async as user">
+                    <mat-card-header>
+                        <mat-card-title>Personal Information</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Name:</strong>
+                                <span>{{user.firstName}} {{user.lastName}}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Email:</strong>
+                                <span>{{user.email}}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Address:</strong>
+                                <span>{{user.streetAddress}}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Postal Code:</strong>
+                                <span>{{user.postalCode}}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Role:</strong>
+                                <span class="role-badge" [class.admin]="user.role === 'ADMIN'">
+                                    {{user.role}}
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Member Since:</strong>
+                                <span>{{user.createdAt | date:'mediumDate'}}</span>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="My Applications">
+            <div class="tab-content">
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>Adoption Applications</mat-card-title>
+                        <mat-card-subtitle>Track your adoption application status</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div *ngIf="applications.length === 0" class="no-applications">
+                            <mat-icon>pets</mat-icon>
+                            <h3>No applications yet</h3>
+                            <p>You haven't submitted any adoption applications yet.</p>
+                            <a mat-raised-button color="primary" routerLink="/cats">
+                                Browse Available Cats
+                            </a>
+                        </div>
+
+                        <div *ngIf="applications.length > 0" class="applications-table">
+                            <table mat-table [dataSource]="applications" class="full-width">
+                                <ng-container matColumnDef="catName">
+                                    <th mat-header-cell *matHeaderCellDef>Cat</th>
+                                    <td mat-cell *matCellDef="let app">{{app.cat.name}}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="adoptionDate">
+                                    <th mat-header-cell *matHeaderCellDef>Application Date</th>
+                                    <td mat-cell *matCellDef="let app">{{app.adoptionDate | date:'short'}}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                                    <td mat-cell *matCellDef="let app">
+                                        <span class="status-badge" [ngClass]="app.status.toLowerCase()">
+                                            {{app.status}}
+                                        </span>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                            </table>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
