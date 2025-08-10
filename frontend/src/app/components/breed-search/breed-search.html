@@ -1,0 +1,40 @@
+<mat-card class="breed-search-card">
+  <form [formGroup]="breedSearchForm" class="breed-search-form">
+      <div class="filters-row">
+          <mat-form-field appearance="outline" class="name-field">
+              <mat-label>Search by breed name</mat-label>
+              <input matInput formControlName="name" placeholder="Type breed name (e.g. 'rag' for Ragdoll)">
+              <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="characteristics-field">
+              <mat-label>Characteristics (Value ≥ 3)</mat-label>
+              <mat-select formControlName="characteristics" multiple>
+                  <mat-option *ngFor="let option of characteristicOptions" [value]="option.value">
+                      {{option.label}}
+                  </mat-option>
+              </mat-select>
+              <mat-hint>Select traits you want the breed to have</mat-hint>
+          </mat-form-field>
+
+          <button mat-button type="button" (click)="clearFilters()" class="clear-btn">
+              <mat-icon>clear</mat-icon>
+              Clear All
+          </button>
+      </div>
+
+      <div class="characteristics-section" *ngIf="getSelectedCharacteristics().length > 0">
+          <div class="selected-characteristics">
+              <span class="label">Selected traits:</span>
+              <mat-chip-set>
+                  <mat-chip *ngFor="let characteristic of getSelectedCharacteristics()" 
+                           [removable]="true" 
+                           (removed)="removeCharacteristic(characteristic)">
+                      {{characteristic}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+              </mat-chip-set>
+          </div>
+      </div>
+  </form>
+</mat-card>

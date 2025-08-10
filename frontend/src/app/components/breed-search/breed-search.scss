@@ -1,0 +1,191 @@
+.breed-search-card {
+    margin-bottom: 2rem;
+    max-width: 1200px;
+    max-height: fit-content;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+    .breed-search-form {
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+
+            .name-field {
+                flex: 1;
+                min-width: 250px;
+
+                .mat-mdc-form-field-icon-suffix {
+                    color: #666;
+                }
+            }
+
+            .characteristics-field {
+                flex: 1;
+                min-width: 300px;
+            }
+
+            .clear-btn {
+                flex-shrink: 0;
+                height: 56px;
+                margin-top: 0;
+                white-space: nowrap;
+
+                mat-icon {
+                    margin-right: 0.5rem;
+                }
+            }
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+
+                .name-field,
+                .characteristics-field {
+                    width: 100%;
+                    min-width: unset;
+                }
+
+                .clear-btn {
+                    width: 100%;
+                    height: auto;
+                    margin-top: 0.5rem;
+                }
+            }
+        }
+
+        .characteristics-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+
+            .label {
+                font-weight: 500;
+                color: #666;
+                white-space: nowrap;
+            }
+
+            mat-chip-set {
+                flex: 1;
+
+                mat-chip {
+                    margin: 0.25rem;
+
+                    mat-icon {
+                        font-size: 18px;
+                        width: 18px;
+                        height: 18px;
+                    }
+                }
+            }
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+                align-items: flex-start;
+
+                .label {
+                    margin-bottom: 0.5rem;
+                }
+
+                mat-chip-set {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+
+        .search-btn {
+            background-color: #1976d2;
+
+            mat-icon {
+                margin-right: 0.5rem;
+            }
+        }
+
+        .clear-btn {
+            mat-icon {
+                margin-right: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            flex-direction: column;
+
+            button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.breed-search-card {
+    .mat-mdc-form-field {
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: #ddd;
+        }
+
+        &:hover .mdc-notched-outline__leading,
+        &:hover .mdc-notched-outline__notch,
+        &:hover .mdc-notched-outline__trailing {
+            border-color: #1976d2;
+        }
+    }
+
+    .mat-mdc-select-multiple .mat-mdc-select-value {
+        .mat-mdc-select-value-text {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .breed-search-card {
+        margin: 0 -1rem 2rem -1rem;
+        border-radius: 0;
+        padding: 1rem;
+
+        .breed-search-form {
+            .filters-row {
+
+                .name-field,
+                .characteristics-field {
+                    max-width: none;
+                }
+            }
+        }
+    }
+}
+
+.breed-search-card mat-chip {
+    background-color: #e3f2fd;
+    color: #1976d2;
+
+    &:hover {
+        background-color: #bbdefb;
+    }
+
+    mat-icon {
+        color: #1976d2;
+
+        &:hover {
+            color: #d32f2f;
+        }
+    }
+}
