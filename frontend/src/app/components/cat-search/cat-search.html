@@ -1,0 +1,43 @@
+<mat-card class="cat-search-card">
+    <form [formGroup]="catSearchForm" (ngSubmit)="onSearch()" class="cat-search-form">
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Breed</mat-label>
+                <mat-select formControlName="breed">
+                    <mat-option value="">Any Breed</mat-option>
+                    <mat-option *ngFor="let breedName of breedNames" [value]="breedName">
+                        {{breedName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Age Range</mat-label>
+                <mat-select formControlName="ageRange">
+                    <mat-option *ngFor="let age of ageRanges" [value]="age.value">
+                        {{age.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Gender</mat-label>
+                <mat-select formControlName="gender">
+                    <mat-option *ngFor="let gender of genderOptions" [value]="gender.value">
+                        {{gender.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <div class="button-group">
+                <button mat-raised-button color="primary" type="submit" class="search-btn">
+                    Search
+                </button>
+                <button mat-button type="button" (click)="clearFilters()" class="clear-btn">
+                    <mat-icon>clear</mat-icon>
+                    Clear
+                </button>
+            </div>
+        </div>
+    </form>
+</mat-card>

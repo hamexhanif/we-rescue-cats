@@ -1,0 +1,31 @@
+<mat-card class="cat-card">
+    <div class="cat-image" (click)="viewCatDetails()">
+        <img *ngIf="cat.imageUrl" [src]="cat.imageUrl" [alt]="cat.name" class="cat-photo">
+
+        <div *ngIf="!cat.imageUrl" class="placeholder-image">
+            <mat-icon>pets</mat-icon>
+        </div>
+    </div>
+
+    <mat-card-content class="cat-info">
+        <h3 class="cat-name" (click)="viewCatDetails()">{{cat.name}}</h3>
+        <div class="cat-details">
+            {{cat.breedName}} • {{cat.age}} years • {{cat.gender}} • {{cat.address}}
+        </div>
+
+        <div class="cat-description" *ngIf="cat.description">
+            {{cat.description}}
+        </div>
+
+    </mat-card-content>
+
+    <mat-card-actions class="card-actions">
+        <button mat-button (click)="viewCatDetails()">
+            <mat-icon>visibility</mat-icon>
+            View Details
+        </button>
+        <button mat-raised-button class="adopt-btn" (click)="openAdoptionForm()">
+            {{'Adopt ' + cat.name}}
+        </button>
+    </mat-card-actions>
+</mat-card>

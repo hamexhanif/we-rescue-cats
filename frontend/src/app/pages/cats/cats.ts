@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CatService } from '../../services/cat-service';
 import { Cat } from '../../models/cat-model';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
-import { SearchComponent } from '../../components/search/search';
+import { CatSearchComponent } from '../../components/cat-search/cat-search';
 
 @Component({
   selector: 'app-cats',
@@ -17,13 +16,12 @@ import { SearchComponent } from '../../components/search/search';
   imports: [
     CommonModule,
     RouterModule,
-    MatTabsModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatButtonModule,
     MatIconModule,
     CatCardComponent,
-    SearchComponent
+    CatSearchComponent
   ],
   templateUrl: './cats.html',
   styleUrl: './cats.scss'
@@ -31,6 +29,7 @@ import { SearchComponent } from '../../components/search/search';
 export class CatsComponent implements OnInit {
   cats: Cat[] = [];
   filteredCats: Cat[] = [];
+  allCats: Cat[] = [];
   loading = true;
 
   pageSize = 12;
@@ -38,7 +37,6 @@ export class CatsComponent implements OnInit {
   totalCats = 0;
 
   currentFilters: any = {};
-  selectedTabIndex = 0;
 
   constructor(
     private catService: CatService,
@@ -58,55 +56,83 @@ export class CatsComponent implements OnInit {
     this.catService.getAvailableCats().subscribe({
       next: (cats) => {
         if (cats) {
-          this.cats = cats;
-          this.applyTabFilter();
+          this.allCats = cats;
+          this.applyFilters();
         }
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading cats:', error);
         this.loading = false;
-        this.cats = this.getMockCats();
-        this.applyTabFilter();
+        this.allCats = this.getMockCats();
+        this.applyFilters();
       }
     });
   }
 
   onFiltersChanged(filters: any) {
+    console.log('Received filters from CatSearchComponent:', filters);
     this.currentFilters = filters;
     this.pageIndex = 0;
+    
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: filters,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'replace'
     });
-    this.loadAvailableCats();
+    
+    this.applyFilters();
   }
 
-  onTabChange(tabIndex: number) {
-    this.selectedTabIndex = tabIndex;
-    this.pageIndex = 0;
-    this.applyTabFilter();
-  }
+  applyFilters() {
+    let filtered = [...this.allCats];
 
-  applyTabFilter() {
-    let filtered = [...this.cats];
+    if (this.currentFilters && Object.keys(this.currentFilters).length > 0) {
+      filtered = filtered.filter(cat => {
+        // Filter by breed name
+        if (this.currentFilters.breed && this.currentFilters.breed !== '') {
+          if (cat.breedName !== this.currentFilters.breed) {
+            return false;
+          }
+        }
+        // Filter by gender
+        if (this.currentFilters.gender && this.currentFilters.gender !== '') {
+          if (cat.gender !== this.currentFilters.gender) {
+            return false;
+          }
+        }
+        // Filter by age range
+        if (this.currentFilters.ageRange && this.currentFilters.ageRange !== '') {
+          const age = cat.age;
+          let ageMatch = true;
+          
+          switch (this.currentFilters.ageRange) {
+            case '0-2':
+              ageMatch = age >= 0 && age <= 2;
+              break;
+            case '3-7':
+              ageMatch = age >= 3 && age <= 7;
+              break;
+            case '8+':
+              ageMatch = age >= 8;
+              break;
+          }
+          
+          if (!ageMatch) {
+            return false;
+          }
+        }
 
-    switch (this.selectedTabIndex) {
-      case 1: // Available
-        filtered = filtered.filter(cat => cat.adoptionStatus === 'AVAILABLE');
-        break;
-      case 2: // Pending
-        filtered = filtered.filter(cat => cat.adoptionStatus === 'PENDING');
-        break;
-      default: // All
-        break;
+        return true;
+      });
     }
 
     this.filteredCats = filtered;
     this.totalCats = filtered.length;
-  }
+    this.cats = filtered;
 
+    console.log(`Applied filters. Showing ${this.totalCats} cats out of ${this.allCats.length} total`);
+  }
 
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
@@ -119,13 +145,16 @@ export class CatsComponent implements OnInit {
   }
 
   clearFilters() {
+    console.log('Clearing all filters');
     this.currentFilters = {};
-    this.selectedTabIndex = 0;
+    this.pageIndex = 0;
+    
+    // Clear URL params
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {},
     });
-    this.loadAvailableCats();
+    this.applyFilters();
   }
 
   private getMockCats(): Cat[] {
@@ -149,15 +178,47 @@ export class CatsComponent implements OnInit {
       {
         id: 2,
         name: 'Max',
-        age: 2,
+        age: 5,
         gender: 'MALE',
-        breedId: 'pers',
-        breedName: 'Persian Mix',
-        description: 'Sweet and gentle cat looking for a loving home',
+        breedId: 'siam',
+        breedName: 'Siamese',
+        description: 'Playful and energetic cat, loves to chase toys',
         adoptionStatus: 'AVAILABLE',
         latitude: 53.124,
         longitude: 14.223,
         address: 'Dresden',
+        imageUrl: 'https://cdn2.thecatapi.com/images/O3btzLlsO.png',
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z'
+      },
+      {
+        id: 3,
+        name: 'Bella',
+        age: 8,
+        gender: 'FEMALE',
+        breedId: 'mcoo',
+        breedName: 'Maine Coon',
+        description: 'Senior cat with lots of love to give',
+        adoptionStatus: 'AVAILABLE',
+        latitude: 53.124,
+        longitude: 14.223,
+        address: 'Leipzig',
+        imageUrl: 'https://cdn2.thecatapi.com/images/O3btzLlsO.png',
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z'
+      },
+      {
+        id: 4,
+        name: 'Charlie',
+        age: 1,
+        gender: 'MALE',
+        breedId: 'pers',
+        breedName: 'Persian Mix',
+        description: 'Young and playful kitten looking for an active family',
+        adoptionStatus: 'AVAILABLE',
+        latitude: 53.124,
+        longitude: 14.223,
+        address: 'Munich',
         imageUrl: 'https://cdn2.thecatapi.com/images/O3btzLlsO.png',
         createdAt: '2024-01-15T10:00:00Z',
         updatedAt: '2024-01-15T10:00:00Z'
