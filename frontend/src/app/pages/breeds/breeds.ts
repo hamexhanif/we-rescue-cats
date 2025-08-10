@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { CatService } from '../../services/cat-service';
 import { CatBreed } from '../../models/cat-model';
+import { BreedSearchComponent } from '../../components/breed-search/breed-search';
 
 @Component({
   selector: 'app-breeds',
@@ -17,17 +18,16 @@ import { CatBreed } from '../../models/cat-model';
     MatCardModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    BreedSearchComponent
   ],
   templateUrl: './breeds.html',
   styleUrl: './breeds.scss'
 })
 export class BreedsComponent implements OnInit {
-  breeds: any[] = [];
+  breeds: CatBreed[] = [];
   loading = true;
-  filteredBreeds: any[] = [];
-  searchQuery: string = '';
-  selectedFilter: string = '';
+  allBreeds: CatBreed[] = [];
 
   constructor(private catService: CatService) { }
 
@@ -36,27 +36,23 @@ export class BreedsComponent implements OnInit {
   }
 
   loadBreeds() {
-    this.catService.getTheCatBreeds().subscribe({
+    this.catService.getCatBreeds().subscribe({
       next: (breeds) => {
+        this.allBreeds = breeds;
         this.breeds = breeds;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading breeds:', error);
         this.loading = false;
-        this.breeds = this.getMockBreeds();
+        this.allBreeds = this.getMockBreeds();
+        this.breeds = this.allBreeds;
       }
     });
   }
 
-  filterBreeds() {
-    this.filteredBreeds = this.breeds.filter((breed) => {
-      const matchesSearch = breed.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-      const matchesFilter = this.selectedFilter
-        ? breed[this.selectedFilter] > 3
-        : true;
-      return matchesSearch && matchesFilter;
-    });
+  onBreedsFiltered(filteredBreeds: CatBreed[]) {
+    this.breeds = filteredBreeds;
   }
 
   private getMockBreeds(): CatBreed[] {

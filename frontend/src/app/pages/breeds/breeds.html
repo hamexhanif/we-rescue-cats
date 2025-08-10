@@ -4,6 +4,17 @@
         <p>Learn about different cat breeds and their characteristics</p>
     </div>
 
+    <div class="search-section" *ngIf="!loading">
+        <app-breed-search 
+            [allBreeds]="allBreeds" 
+            (breedsFiltered)="onBreedsFiltered($event)">
+        </app-breed-search>
+    </div>
+
+    <div class="results-info" *ngIf="!loading">
+        <p>Showing {{breeds.length}} of {{allBreeds.length}} breeds</p>
+    </div>
+
     <div class="loading-container" *ngIf="loading">
         <mat-spinner></mat-spinner>
         <p>Loading breeds...</p>
@@ -45,5 +56,11 @@
                 </div>
             </mat-card-content>
         </mat-card>
+    </div>
+
+    <div class="no-results" *ngIf="!loading && breeds.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <h3>No breeds found</h3>
+        <p>Try adjusting your search criteria to find breeds that match your preferences.</p>
     </div>
 </div>
