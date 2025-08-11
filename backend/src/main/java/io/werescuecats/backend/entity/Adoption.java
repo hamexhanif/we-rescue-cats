@@ -86,6 +86,11 @@ public class Adoption {
         this.status = AdoptionStatus.PENDING;
         this.notes = notes;
     }
+
+    public Adoption(Long catId) {
+        this.user = null;
+        this.cat.setId(catId);
+    }
     
     @PrePersist
     protected void onCreate() {

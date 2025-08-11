@@ -93,10 +93,6 @@ public class BreedService {
         breed.setWikipediaUrl(apiBreed.getWikipediaUrl());
         breed.setReferenceImageId(apiBreed.getReferenceImageId());
         breed.setImageUrl(apiBreed.getImageUrl());
-        
-        // if (apiBreed.getImageUrl() != null) {
-        //     breed.setImageUrl(apiBreed.getImageUrl());
-        // }
     }
     
     public List<Breed> getAllBreeds() {
@@ -117,9 +113,7 @@ public class BreedService {
         return breedRepository.findBreedsWithFilters(childFriendly, dogFriendly, energyLevel, origin);
     }
     
-    /**
-     * Fetch on application startup - only if database is empty
-     */
+    //Fetch on application startup - only if database is empty
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         if (config.isFetchOnStartup()) {

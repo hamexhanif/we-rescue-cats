@@ -51,6 +51,7 @@ public class DataInitializationService {
 
         log.info("Initializing sample data...");
 
+
         // Wait for breeds to be loaded first
         if (breedRepository.count() == 0) {
             log.info("Breeds not yet loaded, skipping data initialization");

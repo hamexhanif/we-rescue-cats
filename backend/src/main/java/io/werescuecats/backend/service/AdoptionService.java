@@ -1,5 +1,6 @@
 package io.werescuecats.backend.service;
 
+import io.werescuecats.backend.dto.AnonymousAdoptionData;
 import io.werescuecats.backend.entity.Adoption;
 import io.werescuecats.backend.entity.AdoptionStatus;
 import io.werescuecats.backend.entity.Cat;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -52,6 +54,8 @@ public class AdoptionService {
         }
         
         Adoption adoption = new Adoption(userOpt.get(), cat, notes);
+
+        catService.updateCatStatus(catId, CatStatus.PENDING);
         
         log.info("Creating adoption request for user {} and cat {}", 
                 userOpt.get().getEmail(), cat.getName());
@@ -96,7 +100,7 @@ public class AdoptionService {
             AdoptionStatus.REJECTED,
             admin,
             reason,
-            null,
+            CatStatus.AVAILABLE,
             false
         );
     }
@@ -129,6 +133,33 @@ public class AdoptionService {
         return adoptionRepository.countCompletedAdoptionsByUser(userId);
     }
 
+    public List<AnonymousAdoptionData> getAnonymousAdoptionData() {
+        List<Adoption> completedAdoptions = adoptionRepository.findAll().stream()
+            .filter(adoption -> adoption.getStatus() == AdoptionStatus.COMPLETED)
+            .collect(Collectors.toList());
+        
+        return completedAdoptions.stream()
+            .map(adoption -> {
+                return AnonymousAdoptionData.builder()
+                    .adoptionDate(adoption.getAdoptionDate())
+                    .catBreed(adoption.getCat().getBreed() != null ? 
+                             adoption.getCat().getBreed().getName() : "Unknown")
+                    .catAge(adoption.getCat().getAge())
+                    .locationRegion(extractRegion(adoption.getUser().getStreetAddress()))
+                    .status(adoption.getStatus().name())
+                    .tenantId(adoption.getTenantId())
+                    .build();
+            })
+            .collect(Collectors.toList());
+    }
+
+private String extractRegion(String address) {
+    if (address == null || address.trim().isEmpty()) {
+        return "Unknown";
+    }
+    String[] parts = address.split(",");
+    return parts.length > 0 ? parts[parts.length - 1].trim() : "Unknown";
+}
     private Adoption transitionAdoptionStatus(
         Long adoptionId,
         AdoptionStatus expectedCurrentStatus,
