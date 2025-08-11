@@ -7,6 +7,11 @@ import { CatDetailComponent } from './pages/cat-detail/cat-detail';
 import { LoginComponent } from './pages/auth/login/login';
 import { RegisterComponent } from './pages/auth/register/register';
 import { ProfileComponent } from './pages/profile/profile';
+import { adminGuard } from './guards/admin-guard';
+import { AdminCatsComponent } from './pages/admin/admin-cats/admin-cats';
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard';
+import { AdminApplicationsComponent } from './pages/admin/admin-applications/admin-applications';
+import { AdminUsersComponent } from './pages/admin/admin-users/admin-users';
 
 export const routes: Routes = [
   {
@@ -41,4 +46,30 @@ export const routes: Routes = [
     path: 'profile',
     component: ProfileComponent
   },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    children: [
+      {
+        path: '',
+        component: AdminDashboardComponent
+      },
+      {
+        path: 'cats',
+        component: AdminCatsComponent
+      },
+      {
+        path: 'applications',
+        component: AdminApplicationsComponent
+      },
+      {
+        path: 'users',
+        component: AdminUsersComponent
+      }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];

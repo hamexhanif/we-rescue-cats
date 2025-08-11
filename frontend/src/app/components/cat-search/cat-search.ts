@@ -70,7 +70,6 @@ export class CatSearchComponent implements OnInit {
       next: (breeds: CatBreed[]) => {
         this.allBreeds = breeds;
         this.breedNames = breeds.map(breed => breed.name);
-        console.log('Loaded breeds:', this.breedNames);
       },
       error: (error) => {
         console.error('Error loading breeds:', error);

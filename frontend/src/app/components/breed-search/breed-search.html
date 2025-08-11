@@ -8,7 +8,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="characteristics-field">
-              <mat-label>Characteristics (Value ≥ 3)</mat-label>
+              <mat-label>Characteristics</mat-label>
               <mat-select formControlName="characteristics" multiple>
                   <mat-option *ngFor="let option of characteristicOptions" [value]="option.value">
                       {{option.label}}

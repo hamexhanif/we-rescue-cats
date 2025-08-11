@@ -46,8 +46,6 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (response.success) {
-            // Note: Register response doesn't include token in your backend
-            // You might want to auto-login after registration
             console.log('Registration successful:', response.user);
           }
         }),

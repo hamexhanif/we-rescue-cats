@@ -9,6 +9,7 @@ import { CatService } from '../../services/cat-service';
 import { Cat, CatBreed } from '../../models/cat-model';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
 import { MapComponent } from '../../components/map/map';
+import { StatsComponent } from '../../components/stats/stats';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,7 @@ import { MapComponent } from '../../components/map/map';
     MatCardModule,
     MatProgressSpinnerModule,
     CatCardComponent,
+    StatsComponent,
     MapComponent
   ],
   templateUrl: './home.html',

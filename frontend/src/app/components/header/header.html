@@ -1,6 +1,8 @@
 <mat-toolbar class="header-toolbar">
     <div class="nav-container">
-        <div class="logo" routerLink="/">we rescue cats</div>
+        <div class="logo" routerLink="/">
+            <img src="cat-logo-fixed-long.svg"/>
+        </div>
 
         <nav class="nav-menu">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
@@ -38,7 +40,7 @@
 
             <ng-template #loginButtons>
                 <button mat-button routerLink="/login">Login</button>
-                <button mat-raised-button color="primary" routerLink="/register">Sign Up</button>
+                <button mat-raised-button class="signup-button" routerLink="/register">Sign Up</button>
             </ng-template>
         </div>
     </div>

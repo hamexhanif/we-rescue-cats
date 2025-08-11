@@ -85,19 +85,28 @@ export class AdoptionFormComponent implements OnInit {
             duration: 5000,
             panelClass: ['success-snackbar']
           });
-          this.dialogRef.close(response);
+          this.dialogRef.close({ success: true, adoption: response });
         },
         error: (error) => {
           this.loading = false;
-          console.error('Error submitting application:', error);
-          this.snackBar.open(
-            error.error?.message || 'Error submitting application. Please try again.',
-            'Close',
-            {
-              duration: 5000,
-              panelClass: ['error-snackbar']
+          console.error('Full error object:', error);
+          
+          let errorMessage = 'Error submitting application. Please try again.';
+          
+          if (error.status === 400) {
+            if (typeof error.error === 'string' && error.error.includes('not available for adoption')) {
+              errorMessage = 'This cat is no longer available for adoption. Someone else may have already applied.';
+            } else if (typeof error.error === 'string') {
+              errorMessage = error.error;
+            } else if (error.error?.message) {
+              errorMessage = error.error.message;
             }
-          );
+          }
+          
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 7000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     }
