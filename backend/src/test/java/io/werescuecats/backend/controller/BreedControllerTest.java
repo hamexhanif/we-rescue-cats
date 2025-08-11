@@ -1,105 +1,90 @@
 package io.werescuecats.backend.controller;
 
+import io.werescuecats.backend.dto.BreedDto;
 import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.service.BreedService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BreedController.class)
-@WithMockUser
+@ExtendWith(MockitoExtension.class)
 class BreedControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private BreedService breedService;
 
-    @Test
-    void getAllBreeds_WithPagination_ReturnsPagedBreedList() throws Exception {
-        Breed breed = createTestBreed("siam", "Siamese");
-        PageRequest pageable = PageRequest.of(0, 10);
-        Page<Breed> page = new PageImpl<>(List.of(breed), pageable, 1);
+    @InjectMocks
+    private BreedController breedController;
 
-        when(breedService.getAllBreeds(any(Pageable.class))).thenReturn(page);
+    private Breed breed;
 
-        mockMvc.perform(get("/api/breeds")
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].id").value("siam"))
-                .andExpect(jsonPath("$.content[0].name").value("Siamese"))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.number").value(0));
-
-        verify(breedService).getAllBreeds(any(Pageable.class));
-    }
-
-
-    @Test
-    void getBreedById_ExistingBreed_ReturnsBreed() throws Exception {
-        Breed breed = createTestBreed("siam", "Siamese");
-        when(breedService.getBreedById("siam")).thenReturn(Optional.of(breed));
-
-        mockMvc.perform(get("/api/breeds/siam"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("siam"))
-                .andExpect(jsonPath("$.name").value("Siamese"));
-    }
-
-    @Test
-    void getBreedById_NonExistingBreed_ReturnsNotFound() throws Exception {
-        when(breedService.getBreedById("nonexistent")).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/breeds/nonexistent"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void searchBreeds_WithParameters_ReturnsFilteredResults() throws Exception {
-        List<Breed> breeds = Arrays.asList(createTestBreed("siam", "Siamese"));
-        when(breedService.searchBreeds(eq("siamese"), any(), any(), any(), any()))
-                .thenReturn(breeds);
-
-
-        mockMvc.perform(get("/api/breeds/search")
-                .param("name", "siamese")
-                .param("childFriendly", "4"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("Siamese"));
-
-        verify(breedService).searchBreeds("siamese", 4, null, null, null);
-    }
-
-    private Breed createTestBreed(String id, String name) {
-        Breed breed = new Breed();
-        breed.setId(id);
-        breed.setName(name);
-        breed.setDescription("Test breed");
-        breed.setOrigin("Test Country");
+    @BeforeEach
+    void setUp() {
+        breed = new Breed("persian", "Persian");
+        breed.setDescription("A lovely long-haired breed");
+        breed.setOrigin("Iran");
         breed.setChildFriendly(4);
         breed.setDogFriendly(3);
-        return breed;
+        breed.setEnergyLevel(2);
+    }
+
+    @Test
+    void getAllBreeds_ShouldReturnBreedList() {
+        List<Breed> breeds = Arrays.asList(breed);
+        when(breedService.getAllBreeds()).thenReturn(breeds);
+
+        ResponseEntity<List<BreedDto>> response = breedController.getAllBreeds();
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Persian", response.getBody().get(0).getName());
+        verify(breedService).getAllBreeds();
+    }
+
+    @Test
+    void getBreedById_ShouldReturnBreed_WhenExists() {
+        when(breedService.getBreedById("persian")).thenReturn(Optional.of(breed));
+
+        ResponseEntity<BreedDto> response = breedController.getBreedById("persian");
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Persian", response.getBody().getName());
+        verify(breedService).getBreedById("persian");
+    }
+
+    @Test
+    void getBreedById_ShouldReturnNotFound_WhenDoesNotExist() {
+        
+        when(breedService.getBreedById("nonexistent")).thenReturn(Optional.empty());
+
+        ResponseEntity<BreedDto> response = breedController.getBreedById("nonexistent");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(breedService).getBreedById("nonexistent");
+    }
+
+    @Test
+    void searchBreeds_ShouldReturnFilteredBreeds() {
+        List<Breed> breeds = Arrays.asList(breed);
+        when(breedService.searchBreeds("Persian", 4, null, null, "Iran")).thenReturn(breeds);
+        
+        ResponseEntity<List<BreedDto>> response = breedController.searchBreeds("Persian", 4, null, null, "Iran");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Persian", response.getBody().get(0).getName());
+        verify(breedService).searchBreeds("Persian", 4, null, null, "Iran");
     }
 }

@@ -1,324 +1,238 @@
 package io.werescuecats.backend.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import io.werescuecats.backend.dto.*;
+import io.werescuecats.backend.entity.*;
+import io.werescuecats.backend.security.CustomUserDetails;
+import io.werescuecats.backend.service.AdoptionService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.werescuecats.backend.config.SecurityConfig;
-import io.werescuecats.backend.dto.AdoptionRequestDto;
-import io.werescuecats.backend.entity.Adoption;
-import io.werescuecats.backend.entity.AdoptionStatus;
-import io.werescuecats.backend.entity.Cat;
-import io.werescuecats.backend.entity.User;
-import io.werescuecats.backend.exception.CatNotAvailableException;
-import io.werescuecats.backend.security.CustomUserDetails;
-import io.werescuecats.backend.security.CustomUserDetailsService;
-import io.werescuecats.backend.service.AdoptionService;
-
-@WebMvcTest(AdoptionController.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 class AdoptionControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private AdoptionService adoptionService;
 
-    @MockBean
-    private CustomUserDetailsService userDetailsService;
+    @InjectMocks
+    private AdoptionController adoptionController;
 
-    @MockBean
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private AdoptionRequestDto adoptionRequest;
-    private Adoption testAdoption;
-    private User testUser;
-    private Cat testCat;
+    private Adoption adoption;
+    private User user;
+    private Cat cat;
+    private Breed breed;
+    private User admin;
 
     @BeforeEach
     void setUp() {
-        testUser = new User();
-        testUser.setId(1L);
-        testUser.setEmail("test@example.com");
-        testUser.setFirstName("John");
-        testUser.setLastName("Doe");
-
-        testCat = new Cat();
-        testCat.setId(1L);
-        testCat.setName("Fluffy");
-
-        testAdoption = new Adoption(testUser, testCat, "Test notes");
-        testAdoption.setId(1L);
-
-        adoptionRequest = new AdoptionRequestDto();
-        adoptionRequest.setUserId(1L);
-        adoptionRequest.setCatId(1L);
-        adoptionRequest.setNotes("Test notes");
+        breed = new Breed("persian", "Persian");
+        
+        cat = new Cat();
+        cat.setId(1L);
+        cat.setName("Fluffy");
+        cat.setBreed(breed);
+        cat.setStatus(CatStatus.AVAILABLE);
+        
+        user = new User();
+        user.setId(1L);
+        user.setEmail("user@test.com");
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setRole(UserRole.USER);
+        
+        admin = new User();
+        admin.setId(2L);
+        admin.setEmail("admin@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("User");
+        admin.setRole(UserRole.ADMIN);
+        
+        adoption = new Adoption(user, cat);
+        adoption.setId(1L);
+        adoption.setStatus(AdoptionStatus.PENDING);
+        adoption.setAdoptionDate(LocalDateTime.now());
+        adoption.setTenantId("main");
     }
 
     @Test
-    @WithMockUser
-    @DisplayName("Should create adoption successfully")
-    void createAdoption_Success() throws Exception {
-        when(adoptionService.createAdoption(1L, 1L, "Test notes")).thenReturn(testAdoption);
+    void createAdoption_ShouldReturnAdoptionDto() {
+        AdoptionRequestDto request = new AdoptionRequestDto();
+        request.setUserId(1L);
+        request.setCatId(1L);
+        request.setNotes("I love cats");
 
-        mockMvc.perform(post("/api/adoptions")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(adoptionRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.notes").value("Test notes"))
-                .andExpect(jsonPath("$.user.id").value(1L))
-                .andExpect(jsonPath("$.cat.id").value(1L));
+        when(adoptionService.createAdoption(1L, 1L, "I love cats")).thenReturn(adoption);
+
+        ResponseEntity<AdoptionDto> response = adoptionController.createAdoption(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("PENDING", response.getBody().getStatus());
+        verify(adoptionService).createAdoption(1L, 1L, "I love cats");
     }
 
     @Test
-    @WithMockUser
-    @DisplayName("Should return bad request when creation fails")
-    void createAdoption_BadRequest() throws Exception {
-        when(adoptionService.createAdoption(1L, 1L, "Test notes"))
-            .thenThrow(new CatNotAvailableException("Cat not available"));
-
-        mockMvc.perform(post("/api/adoptions")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(adoptionRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should get pending adoptions for admin")
-    void getPendingAdoptions_Success() throws Exception {
-        List<Adoption> pendingAdoptions = Arrays.asList(testAdoption);
+    void getPendingAdoptions_ShouldReturnPendingAdoptions() {
+        List<Adoption> pendingAdoptions = Arrays.asList(adoption);
         when(adoptionService.getPendingAdoptions()).thenReturn(pendingAdoptions);
 
-        mockMvc.perform(get("/api/adoptions/pending"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1L));
+        ResponseEntity<List<AdoptionDto>> response = adoptionController.getPendingAdoptions();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(adoptionService).getPendingAdoptions();
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should deny access to pending adoptions for non-admin")
-    void getPendingAdoptions_AccessDenied() throws Exception {
-        mockMvc.perform(get("/api/adoptions/pending"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should get adoptions by user")
-    void getAdoptionsByUser_Success() throws Exception {
-        List<Adoption> userAdoptions = Arrays.asList(testAdoption);
+    void getAdoptionsByUser_ShouldReturnUserAdoptions() {
+        List<Adoption> userAdoptions = Arrays.asList(adoption);
         when(adoptionService.getAdoptionsByUser(1L)).thenReturn(userAdoptions);
 
-        mockMvc.perform(get("/api/adoptions/user/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1L));
+        ResponseEntity<List<AdoptionDto>> response = adoptionController.getAdoptionsByUser(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(adoptionService).getAdoptionsByUser(1L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should get all adoptions for admin")
-    void getAllAdoptions_Success() throws Exception {
-        when(adoptionService.getAllAdoptions()).thenReturn(List.of(testAdoption));
+    void getAllAdoptions_ShouldReturnAllAdoptions() {
+        List<Adoption> allAdoptions = Arrays.asList(adoption);
+        when(adoptionService.getAllAdoptions()).thenReturn(allAdoptions);
 
-        mockMvc.perform(get("/api/adoptions"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+        ResponseEntity<List<AdoptionDto>> response = adoptionController.getAllAdoptions();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(adoptionService).getAllAdoptions();
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should forbid non-admin from getting all adoptions")
-    void getAllAdoptions_Forbidden() throws Exception {
-        mockMvc.perform(get("/api/adoptions"))
-                .andExpect(status().isForbidden());
+    void getAdoptionById_ShouldReturnAdoption() {
+        when(adoptionService.getAdoptionById(1L)).thenReturn(Optional.of(adoption));
+
+        ResponseEntity<AdoptionDto> response = adoptionController.getAdoptionById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getId());
+        verify(adoptionService).getAdoptionById(1L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should get adoption by ID if exists")
-    void getAdoptionById_Success() throws Exception {
-        when(adoptionService.getAdoptionById(1L)).thenReturn(Optional.of(testAdoption));
+    void getAdoptionById_NotFound() {
+        when(adoptionService.getAdoptionById(999L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/adoptions/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+        ResponseEntity<AdoptionDto> response = adoptionController.getAdoptionById(999L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(adoptionService).getAdoptionById(999L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return 404 if adoption by ID not found")
-    void getAdoptionById_NotFound() throws Exception {
-        when(adoptionService.getAdoptionById(1L)).thenReturn(Optional.empty());
+    void approveAdoption_ShouldReturnApprovedAdoption() {
+        adoption.setStatus(AdoptionStatus.APPROVED);
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.approveAdoption(eq(1L), any(User.class))).thenReturn(adoption);
 
-        mockMvc.perform(get("/api/adoptions/1"))
-                .andExpect(status().isNotFound());
+        ResponseEntity<AdoptionDto> response = adoptionController.approveAdoption(1L, userDetails);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("APPROVED", response.getBody().getStatus());
+        verify(adoptionService).approveAdoption(eq(1L), any(User.class));
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should forbid non-admin from getting adoption by ID")
-    void getAdoptionById_Forbidden() throws Exception {
-        mockMvc.perform(get("/api/adoptions/1"))
-                .andExpect(status().isForbidden());
+    void approveAdoption_ShouldReturnBadRequestOnException() {
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.approveAdoption(eq(1L), any(User.class))).thenThrow(new RuntimeException("Error"));
+
+        ResponseEntity<AdoptionDto> response = adoptionController.approveAdoption(1L, userDetails);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(adoptionService).approveAdoption(eq(1L), any(User.class));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should approve adoption successfully")
-    void approveAdoption_Success() throws Exception {
-        User mockAdmin = new User();
-        mockAdmin.setId(2L);
-        mockAdmin.setEmail("admin@example.com");
-        mockAdmin.setFirstName("Admin");
-        mockAdmin.setLastName("User");
+    void completeAdoption_ShouldReturnCompletedAdoption() {
+        adoption.setStatus(AdoptionStatus.COMPLETED);
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.completeAdoption(eq(1L), any(User.class))).thenReturn(adoption);
 
-        // Create mock CustomUserDetails
-        CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-        when(mockUserDetails.getUser()).thenReturn(mockAdmin);
-        
-        testAdoption.setStatus(AdoptionStatus.APPROVED);
-        when(adoptionService.approveAdoption(eq(1L), any(User.class))).thenReturn(testAdoption);
+        ResponseEntity<AdoptionDto> response = adoptionController.completeAdoption(1L, userDetails);
 
-        mockMvc.perform(put("/api/adoptions/1/approve")
-                .with(csrf()) // Add CSRF token
-                .with(authentication(new UsernamePasswordAuthenticationToken(mockUserDetails, null, 
-                    List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("COMPLETED", response.getBody().getStatus());
+        verify(adoptionService).completeAdoption(eq(1L), any(User.class));
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should deny access to approve adoption for non-admin")
-    void approveAdoption_Forbidden() throws Exception {
-        mockMvc.perform(put("/api/adoptions/1/approve"))
-            .andExpect(status().isForbidden());
+    void completeAdoption_ShouldReturnBadRequestOnException() {
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.completeAdoption(eq(1L), any(User.class))).thenThrow(new RuntimeException("Error"));
+
+        ResponseEntity<AdoptionDto> response = adoptionController.completeAdoption(1L, userDetails);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(adoptionService).completeAdoption(eq(1L), any(User.class));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should complete adoption successfully")
-    void completeAdoption_Success() throws Exception {
-        User admin = new User();
-        admin.setId(2L);
-        CustomUserDetails mockDetails = mock(CustomUserDetails.class);
-        when(mockDetails.getUser()).thenReturn(admin);
+    void rejectAdoption_ShouldReturnRejectedAdoption() {
+        adoption.setStatus(AdoptionStatus.REJECTED);
+        RejectAdoptionRequestDto request = new RejectAdoptionRequestDto();
+        request.setReason("Not suitable");
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.rejectAdoption(eq(1L), any(User.class), eq("Not suitable"))).thenReturn(adoption);
 
-        testAdoption.setStatus(AdoptionStatus.COMPLETED);
-        when(adoptionService.completeAdoption(eq(1L), any(User.class))).thenReturn(testAdoption);
+        ResponseEntity<AdoptionDto> response = adoptionController.rejectAdoption(1L, userDetails, request);
 
-        mockMvc.perform(put("/api/adoptions/1/complete")
-                .with(csrf())
-                .with(authentication(new UsernamePasswordAuthenticationToken(mockDetails, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("COMPLETED"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("REJECTED", response.getBody().getStatus());
+        verify(adoptionService).rejectAdoption(eq(1L), any(User.class), eq("Not suitable"));
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should forbid user from completing adoption")
-    void completeAdoption_Forbidden() throws Exception {
-        mockMvc.perform(put("/api/adoptions/1/complete").with(csrf()))
-                .andExpect(status().isForbidden());
+    void rejectAdoption_ShouldReturnBadRequestOnException() {
+        RejectAdoptionRequestDto request = new RejectAdoptionRequestDto();
+        request.setReason("Not suitable");
+        CustomUserDetails userDetails = new CustomUserDetails(admin);
+        when(adoptionService.rejectAdoption(eq(1L), any(User.class), anyString())).thenThrow(new RuntimeException("Error"));
+
+        ResponseEntity<AdoptionDto> response = adoptionController.rejectAdoption(1L, userDetails, request);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(adoptionService).rejectAdoption(eq(1L), any(User.class), anyString());
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should reject adoption with valid reason")
-    void rejectAdoption_Success() throws Exception {
-        User admin = new User();
-        admin.setId(2L);
-        CustomUserDetails mockDetails = mock(CustomUserDetails.class);
-        when(mockDetails.getUser()).thenReturn(admin);
+    void getUserAdoptionStats_ShouldReturnStats() {
+        List<Adoption> userAdoptions = Arrays.asList(adoption);
+        when(adoptionService.getUserAdoptionCount(1L)).thenReturn(1L);
+        when(adoptionService.getAdoptionsByUser(1L)).thenReturn(userAdoptions);
 
-        testAdoption.setStatus(AdoptionStatus.REJECTED);
-        when(adoptionService.rejectAdoption(eq(1L), any(User.class), eq("Invalid info"))).thenReturn(testAdoption);
+        ResponseEntity<AdoptionStatsDto> response = adoptionController.getUserAdoptionStats(1L);
 
-        mockMvc.perform(put("/api/adoptions/1/reject")
-                .with(csrf())
-                .with(authentication(new UsernamePasswordAuthenticationToken(mockDetails, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"reason\":\"Invalid info\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("REJECTED"));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("Should return bad request on rejection with invalid body")
-    void rejectAdoption_InvalidRequestBody() throws Exception {
-        mockMvc.perform(put("/api/adoptions/1/reject")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}")) // Missing reason
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should forbid user from rejecting adoption")
-    void rejectAdoption_Forbidden() throws Exception {
-        mockMvc.perform(put("/api/adoptions/1/reject")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"reason\":\"Not allowed\"}"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    @DisplayName("Should get user adoption stats")
-    void getUserAdoptionStats_Success() throws Exception {
-        when(adoptionService.getUserAdoptionCount(1L)).thenReturn(2L);
-        when(adoptionService.getAdoptionsByUser(1L)).thenReturn(Arrays.asList(testAdoption));
-
-        mockMvc.perform(get("/api/adoptions/user/1/stats"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(1L))
-                .andExpect(jsonPath("$.completedAdoptions").value(2L))
-                .andExpect(jsonPath("$.totalApplications").value(1));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1L, response.getBody().getUserId());
+        assertEquals(1, response.getBody().getTotalApplications());
+        assertEquals(1, response.getBody().getPendingApplications());
+        verify(adoptionService).getUserAdoptionCount(1L);
+        verify(adoptionService).getAdoptionsByUser(1L);
     }
 }

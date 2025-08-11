@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import io.werescuecats.backend.exception.CatNotAvailableException;
 import io.werescuecats.backend.exception.ResourceNotFoundException;
+import io.werescuecats.backend.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +21,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CatNotAvailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleCatNotAvailable(CatNotAvailableException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleUserNotFound(UserNotFoundException ex) {
         return ex.getMessage();
     }
 }

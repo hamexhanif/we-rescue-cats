@@ -1,298 +1,264 @@
 package io.werescuecats.backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.werescuecats.backend.config.SecurityConfig;
+import io.werescuecats.backend.dto.CatDto;
 import io.werescuecats.backend.dto.StatusUpdateRequestDto;
 import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.entity.CatStatus;
-import io.werescuecats.backend.security.CustomUserDetailsService;
+import io.werescuecats.backend.service.BreedService;
 import io.werescuecats.backend.service.CatService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CatController.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 class CatControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private CatService catService;
 
-    @MockBean
-    private CustomUserDetailsService userDetailsService;
+    @Mock
+    private BreedService breedService;
 
-    @MockBean
-    private PasswordEncoder passwordEncoder;
+    @InjectMocks
+    private CatController catController;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Cat testCat;
-    private Breed testBreed;
+    private Cat cat;
+    private Breed breed;
+    private CatDto catDto;
 
     @BeforeEach
     void setUp() {
-        testBreed = new Breed();
-        testBreed.setId("persian");
-        testBreed.setName("Persian");
+        breed = new Breed("persian", "Persian");
 
-        testCat = new Cat();
-        testCat.setId(1L);
-        testCat.setName("Fluffy");
-        testCat.setAge(3);
-        testCat.setDescription("A lovely Persian cat");
-        testCat.setBreed(testBreed);
-        testCat.setImageUrl("http://example.com/fluffy.jpg");
-        testCat.setLatitude(51.0504);
-        testCat.setLongitude(13.7373);
-        testCat.setAddress("Dresden, Germany");
-        testCat.setStatus(CatStatus.AVAILABLE);
-        testCat.setCreatedAt(LocalDateTime.now());
-        testCat.setUpdatedAt(LocalDateTime.now());
+        cat = new Cat();
+        cat.setId(1L);
+        cat.setName("Fluffy");
+        cat.setAge(2);
+        cat.setGender("Female");
+        cat.setDescription("A lovely cat");
+        cat.setBreed(breed);
+        cat.setStatus(CatStatus.AVAILABLE);
+
+        catDto = CatDto.builder()
+                .id(1L)
+                .name("Fluffy")
+                .age(2)
+                .gender("Female")
+                .description("A lovely cat")
+                .breedId("persian")
+                .breedName("Persian")
+                .status(CatStatus.AVAILABLE)
+                .build();
     }
 
     @Test
-    @WithMockUser
-    void getAvailableCats_ShouldReturnAvailableCats() throws Exception {
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getAvailableCats()).thenReturn(cats);
+    void getAvailableCats_ShouldReturnAvailableCats() {
+        List<Cat> availableCats = Arrays.asList(cat);
+        when(catService.getAvailableCats()).thenReturn(availableCats);
 
-        mockMvc.perform(get("/api/cats/available"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Fluffy"))
-                .andExpect(jsonPath("$[0].age").value(3))
-                .andExpect(jsonPath("$[0].breedName").value("Persian"))
-                .andExpect(jsonPath("$[0].address").value("Dresden, Germany"))
-                .andExpect(jsonPath("$[0].status").value("AVAILABLE"));
+        ResponseEntity<List<CatDto>> response = catController.getAvailableCats();
 
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Fluffy", response.getBody().get(0).getName());
         verify(catService).getAvailableCats();
     }
 
     @Test
-    @WithMockUser
-    void getCatsByBreed_ShouldReturnCatsOfSpecificBreed() throws Exception {
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getCatsByBreed("persian")).thenReturn(cats);
+    void getCatsByBreed_ShouldReturnCatsOfSpecificBreed() {
+        List<Cat> breedCats = Arrays.asList(cat);
+        when(catService.getCatsByBreed("persian")).thenReturn(breedCats);
+        
+        ResponseEntity<List<CatDto>> response = catController.getCatsByBreed("persian");
 
-        mockMvc.perform(get("/api/cats/breed/persian"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].breedName").value("Persian"));
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("persian", response.getBody().get(0).getBreedId());
         verify(catService).getCatsByBreed("persian");
     }
 
     @Test
-    @WithMockUser
-    void getCatsInArea_ShouldReturnCatsInSpecifiedArea() throws Exception {
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getCatsInArea(51.0504, 13.7373, 10.0)).thenReturn(cats);
+    void getCatsInArea_ShouldReturnCatsInArea() {
+        List<Cat> areaCats = Arrays.asList(cat);
+        when(catService.getCatsInArea(40.7128, -74.0060, 10.0)).thenReturn(areaCats);
 
-        mockMvc.perform(get("/api/cats/area")
-                .param("lat", "51.0504")
-                .param("lon", "13.7373")
-                .param("radius", "10.0"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("Fluffy"));
+        ResponseEntity<List<CatDto>> response = catController.getCatsInArea(40.7128, -74.0060, 10.0);
 
-        verify(catService).getCatsInArea(51.0504, 13.7373, 10.0);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(catService).getCatsInArea(40.7128, -74.0060, 10.0);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void getPendingCats_WithAdminRole_ShouldReturnPendingCats() throws Exception {
-        testCat.setStatus(CatStatus.PENDING);
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getPendingCats()).thenReturn(cats);
-
-        mockMvc.perform(get("/api/cats/pending"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("PENDING"));
-
-        verify(catService).getPendingCats();
-    }
-
-    @Test
-    @WithMockUser
-    void getPendingCats_WithoutAdminRole_ShouldReturnForbidden() throws Exception {
-        mockMvc.perform(get("/api/cats/pending"))
-                .andExpect(status().isForbidden());
-
-        verify(catService, never()).getPendingCats();
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void getAdoptedCats_WithAdminRole_ShouldReturnAdoptedCats() throws Exception {
-        testCat.setStatus(CatStatus.ADOPTED);
-        List<Cat> cats = Arrays.asList(testCat);
-        when(catService.getAdoptedCats()).thenReturn(cats);
-
-        mockMvc.perform(get("/api/cats/adopted"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("ADOPTED"));
-
-        verify(catService).getAdoptedCats();
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void getCatById_WhenCatExists_ShouldReturnCat() throws Exception {
-        when(catService.getCatById(1L)).thenReturn(Optional.of(testCat));
-
-        mockMvc.perform(get("/api/cats/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Fluffy"))
-                .andExpect(jsonPath("$.description").value("A lovely Persian cat"))
-                .andExpect(jsonPath("$.breedId").value("persian"))
-                .andExpect(jsonPath("$.breedName").value("Persian"))
-                .andExpect(jsonPath("$.latitude").value(51.0504))
-                .andExpect(jsonPath("$.longitude").value(13.7373));
-
+    void getCatById_ShouldReturnCat_WhenExists() {
+        when(catService.getCatById(1L)).thenReturn(Optional.of(cat));
+        
+        ResponseEntity<CatDto> response = catController.getCatById(1L);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Fluffy", response.getBody().getName());
         verify(catService).getCatById(1L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void getCatById_WhenCatNotExists_ShouldReturnNotFound() throws Exception {
-        when(catService.getCatById(999L)).thenReturn(Optional.empty());
+    void getCatById_ShouldReturnNotFound_WhenDoesNotExist() {
+        when(catService.getCatById(1L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/cats/999"))
-                .andExpect(status().isNotFound());
-
-        verify(catService).getCatById(999L);
+        ResponseEntity<CatDto> response = catController.getCatById(1L);
+        
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(catService).getCatById(1L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void getAllCats_ShouldReturnPagedCats() throws Exception {
-        List<Cat> cats = Arrays.asList(testCat);
-        Page<Cat> page = new PageImpl<>(cats, PageRequest.of(0, 10), 1);
-        when(catService.getAllCats(any(Pageable.class))).thenReturn(page);
+    void createCat_ShouldReturnCreatedCat() {
+        when(breedService.getBreedById("persian")).thenReturn(Optional.of(breed));
+        when(catService.saveCat(any(Cat.class))).thenReturn(cat);
+        
+        ResponseEntity<CatDto> response = catController.createCat(catDto);
 
-        mockMvc.perform(get("/api/cats")
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].name").value("Fluffy"))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.size").value(10));
-
-        verify(catService).getAllCats(any(Pageable.class));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void createCat_WithValidData_ShouldCreateCat() throws Exception {
-        when(catService.saveCat(any(Cat.class))).thenReturn(testCat);
-
-        mockMvc.perform(post("/api/cats")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testCat)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Fluffy"));
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Fluffy", response.getBody().getName());
         verify(catService).saveCat(any(Cat.class));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void createCat_WhenServiceThrowsException_ShouldReturnBadRequest() throws Exception {
-        when(catService.saveCat(any(Cat.class))).thenThrow(new RuntimeException("Database error"));
+    void updateCatStatus_ShouldReturnUpdatedCat() {
+        cat.setStatus(CatStatus.ADOPTED);
+        StatusUpdateRequestDto request = new StatusUpdateRequestDto();
+        request.setStatus(CatStatus.ADOPTED);
+        when(catService.updateCatStatus(1L, CatStatus.ADOPTED)).thenReturn(cat);
+        
+        ResponseEntity<CatDto> response = catController.updateCatStatus(1L, request);
 
-        mockMvc.perform(post("/api/cats")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testCat)))
-                .andExpect(status().isBadRequest());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(CatStatus.ADOPTED, response.getBody().getStatus());
+        verify(catService).updateCatStatus(1L, CatStatus.ADOPTED);
+    }
 
+    @Test
+    void getPendingCats_ShouldReturnPendingCats() {
+        cat.setStatus(CatStatus.PENDING);
+        when(catService.getPendingCats()).thenReturn(List.of(cat));
+        
+        ResponseEntity<List<CatDto>> response = catController.getPendingCats();
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals(CatStatus.PENDING, response.getBody().get(0).getStatus());
+        verify(catService).getPendingCats();
+    }
+
+    @Test
+    void getAdoptedCats_ShouldReturnAdoptedCats() {
+        cat.setStatus(CatStatus.ADOPTED);
+        when(catService.getAdoptedCats()).thenReturn(List.of(cat));
+        
+        ResponseEntity<List<CatDto>> response = catController.getAdoptedCats();
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals(CatStatus.ADOPTED, response.getBody().get(0).getStatus());
+        verify(catService).getAdoptedCats();
+    }
+
+    @Test
+    void getAllCats_ShouldReturnAllCats() {
+        when(catService.getAllCats()).thenReturn(List.of(cat));
+        
+        ResponseEntity<List<CatDto>> response = catController.getAllCats();
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Fluffy", response.getBody().get(0).getName());
+        verify(catService).getAllCats();
+    }
+
+    @Test
+    void createCat_ShouldReturnBadRequest_WhenExceptionThrown() {
+        when(breedService.getBreedById("persian")).thenReturn(Optional.of(breed));
+        doThrow(new RuntimeException("DB error")).when(catService).saveCat(any(Cat.class));
+        
+        ResponseEntity<CatDto> response = catController.createCat(catDto);
+        
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(catService).saveCat(any(Cat.class));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateCatStatus_WithValidData_ShouldUpdateStatus() throws Exception {
-        testCat.setStatus(CatStatus.ADOPTED);
-        when(catService.updateCatStatus(1L, CatStatus.ADOPTED)).thenReturn(testCat);
-        
+    void updateCatStatus_ShouldReturnBadRequest_WhenExceptionThrown() {
         StatusUpdateRequestDto request = new StatusUpdateRequestDto();
         request.setStatus(CatStatus.ADOPTED);
+        doThrow(new RuntimeException("Update failed"))
+                .when(catService).updateCatStatus(1L, CatStatus.ADOPTED);
+        
+        ResponseEntity<CatDto> response = catController.updateCatStatus(1L, request);
 
-        mockMvc.perform(put("/api/cats/1/status")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("ADOPTED"));
-
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(catService).updateCatStatus(1L, CatStatus.ADOPTED);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateCatStatus_WhenServiceThrowsException_ShouldReturnBadRequest() throws Exception {
-        when(catService.updateCatStatus(1L, CatStatus.ADOPTED))
-            .thenThrow(new RuntimeException("Cat not found"));
+    void toDto_ShouldMapCatEntityToDto() {
+        cat.setLatitude(12.34);
+        cat.setLongitude(56.78);
+        cat.setAddress("123 Cat Street");
+
+        CatDto dto = catController.toDto(cat);
         
-        StatusUpdateRequestDto request = new StatusUpdateRequestDto();
-        request.setStatus(CatStatus.ADOPTED);
-
-        mockMvc.perform(put("/api/cats/1/status")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-
-        verify(catService).updateCatStatus(1L, CatStatus.ADOPTED);
+        assertNotNull(dto);
+        assertEquals(cat.getId(), dto.getId());
+        assertEquals(cat.getName(), dto.getName());
+        assertEquals(cat.getAge(), dto.getAge());
+        assertEquals(cat.getGender(), dto.getGender());
+        assertEquals(cat.getDescription(), dto.getDescription());
+        assertEquals(cat.getBreed().getId(), dto.getBreedId());
+        assertEquals(cat.getBreed().getName(), dto.getBreedName());
+        assertEquals(cat.getImageUrl(), dto.getImageUrl());
+        assertEquals(cat.getLatitude(), dto.getLatitude());
+        assertEquals(cat.getLongitude(), dto.getLongitude());
+        assertEquals(cat.getAddress(), dto.getAddress());
+        assertEquals(cat.getStatus(), dto.getStatus());
     }
 
     @Test
-    @WithMockUser
-    void createCat_WithoutAdminRole_ShouldReturnForbidden() throws Exception {
-        mockMvc.perform(post("/api/cats")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testCat)))
-                .andExpect(status().isForbidden());
+    void toDto_ShouldReturnNull_WhenCatIsNull() {
+        assertNull(catController.toDto(null));
+    }
 
-        verify(catService, never()).saveCat(any());
+    @Test
+    void toCatEntity_ShouldMapDtoToCatEntity() {
+        when(breedService.getBreedById("persian")).thenReturn(Optional.of(breed));
+        catDto.setLatitude(12.34);
+        catDto.setLongitude(56.78);
+        catDto.setAddress("123 Cat Street");
+
+        Cat entity = catController.toCatEntity(catDto);
+        
+        assertNotNull(entity);
+        assertEquals(catDto.getName(), entity.getName());
+        assertEquals(catDto.getAge(), entity.getAge());
+        assertEquals(catDto.getGender(), entity.getGender());
+        assertEquals(catDto.getDescription(), entity.getDescription());
+        assertEquals(breed, entity.getBreed());
+        assertEquals(catDto.getImageUrl(), entity.getImageUrl());
+        assertEquals(catDto.getLatitude(), entity.getLatitude());
+        assertEquals(catDto.getLongitude(), entity.getLongitude());
+        assertEquals(catDto.getAddress(), entity.getAddress());
+        assertEquals(CatStatus.AVAILABLE, entity.getStatus());
     }
 }

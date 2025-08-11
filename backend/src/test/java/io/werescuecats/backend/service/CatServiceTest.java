@@ -5,8 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import io.werescuecats.backend.config.CatApiConfig;
 import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.entity.CatStatus;
@@ -15,10 +21,12 @@ import io.werescuecats.backend.repository.CatRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -28,8 +36,13 @@ class CatServiceTest {
     @Mock
     private CatRepository catRepository;
 
+    @Mock
+    private CatApiConfig config;
+
+    @Mock
+    private RestTemplate restTemplate;
+
     @InjectMocks
-    @SpyBean
     private CatService catService;
 
     private Cat testCat;
@@ -47,7 +60,7 @@ class CatServiceTest {
         testCat.setAge(3);
         testCat.setDescription("A lovely Persian cat");
         testCat.setBreed(testBreed);
-        testCat.setImageUrl("http://example.com/fluffy.jpg");
+        // testCat.setImageUrl("http://example.com/fluffy.jpg");
         testCat.setLatitude(51.0504);
         testCat.setLongitude(13.7373);
         testCat.setAddress("Dresden, Germany");
@@ -153,17 +166,6 @@ class CatServiceTest {
         );
     }
 
-    // @Test
-    // void saveCat_ShouldSaveAndReturnCat() {
-    //     when(catRepository.save(testCat)).thenReturn(testCat);
-
-    //     Cat result = catService.saveCat(testCat);
-
-    //     assertThat(result).isEqualTo(testCat);
-    //     assertThat(result.getName()).isEqualTo("Fluffy");
-    //     verify(catRepository).save(testCat);
-    // }
-
     @Test
     void updateCatStatus_WhenCatExists_ShouldUpdateStatus() {
         when(catRepository.findById(1L)).thenReturn(Optional.of(testCat));
@@ -198,5 +200,75 @@ class CatServiceTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("Fluffy");
         verify(catRepository).findAll();
+    }
+
+    @Test
+    void saveCat_ShouldFetchImageUrlAndSaveCat() {
+        String expectedImageUrl = "http://example.com/image.jpg";
+        // Mock fetchImageUrlForSpecificBreed so it doesn't actually call the API
+        CatService spyService = Mockito.spy(catService);
+        Mockito.doReturn(expectedImageUrl)
+               .when(spyService)
+               .fetchImageUrlForSpecificBreed("persian");
+
+        when(catRepository.save(testCat)).thenReturn(testCat);
+
+        Cat result = spyService.saveCat(testCat);
+
+        assertThat(result).isEqualTo(testCat);
+        assertThat(result.getImageUrl()).isEqualTo("http://example.com/image.jpg");
+        verify(catRepository).save(testCat);
+    }
+
+    @Test
+    void fetchImageUrlForSpecificBreed_ShouldReturnImageUrl_WhenImagesFound() {
+        when(config.getApiKey()).thenReturn("api-key");
+        when(config.getBaseUrl()).thenReturn("http://catapi.com");
+
+        Map<String, Object> imageData = Map.of("url", "http://img.com/cat.jpg");
+        Map[] images = new Map[]{imageData};
+
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(Map[].class)
+        )).thenReturn(ResponseEntity.ok(images));
+
+        String url = catService.fetchImageUrlForSpecificBreed("persian");
+
+        assertThat(url).isEqualTo("http://img.com/cat.jpg");
+    }
+
+    @Test
+    void fetchImageUrlForSpecificBreed_ShouldReturnNull_WhenNoImagesFound() {
+        when(config.getApiKey()).thenReturn("api-key");
+        when(config.getBaseUrl()).thenReturn("http://catapi.com");
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(Map[].class)
+        )).thenReturn(ResponseEntity.ok(new Map[]{}));
+
+        String url = catService.fetchImageUrlForSpecificBreed("persian");
+
+        assertThat(url).isNull();
+    }
+
+    @Test
+    void fetchImageUrlForSpecificBreed_ShouldThrowRuntimeException_WhenApiCallFails() {
+        when(config.getApiKey()).thenReturn("api-key");
+        when(config.getBaseUrl()).thenReturn("http://catapi.com");
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(Map[].class)
+        )).thenThrow(new RuntimeException("API failure"));
+
+        assertThatThrownBy(() -> catService.fetchImageUrlForSpecificBreed("persian"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("API call failed");
     }
 }
