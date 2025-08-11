@@ -52,6 +52,19 @@
 
 .featured-cats,
 .how-it-works,
+.breeds-preview{
+    padding: 4rem 0;
+    background: #f8f9fa;
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+}
+
+.featured-cats,
+.how-it-works,
 .breeds-preview,
 .success-stories {
     padding: 4rem 0;
@@ -87,6 +100,10 @@
     color: #6c757d;
     margin-bottom: 3rem;
     font-size: 1.1rem;
+
+    &.white{
+        color: whitesmoke;
+    }
 }
 
 .filter-tabs {

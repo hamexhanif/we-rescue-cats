@@ -29,7 +29,7 @@ import { Observable } from 'rxjs';
 export class ProfileComponent implements OnInit {
   currentUser$: Observable<User | null>;
   applications: any[] = [];
-  displayedColumns: string[] = ['catName', 'adoptionDate', 'status'];
+  displayedColumns: string[] = ['catName', 'adoptionDate', 'status', 'adminNotes'];
 
   constructor(
     private authService: AuthService,

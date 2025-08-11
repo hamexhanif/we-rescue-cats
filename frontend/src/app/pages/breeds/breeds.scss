@@ -17,7 +17,7 @@
     }
 
     p {
-        color: #6c757d;
+        color: whitesmoke;
         font-size: 1.1rem;
     }
 }
@@ -37,6 +37,11 @@
       flex: 1;
     }
   }
+
+  .results-info {
+    margin-bottom: 1rem;
+    color: whitesmoke;
+}
 
 .loading-container {
     display: flex;
@@ -158,6 +163,29 @@
                 }
             }
         }
+    }
+}
+
+.no-results {
+    text-align: center;
+    padding: 4rem;
+    color: whitesmoke;
+
+    mat-icon {
+        font-size: 4rem;
+        width: 4rem;
+        height: 4rem;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+
+    h3 {
+        margin-bottom: 1rem;
+        color: #323e51;
+    }
+
+    p {
+        margin-bottom: 2rem;
     }
 }
 

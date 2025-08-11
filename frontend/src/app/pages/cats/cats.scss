@@ -17,7 +17,7 @@
     }
 
     p {
-        color: #6c757d;
+        color: whitesmoke;
         font-size: 1.1rem;
     }
 }
@@ -32,7 +32,7 @@
 
 .results-info {
     margin-bottom: 1rem;
-    color: #6c757d;
+    color: whitesmoke;
 }
 
 .loading-container {
@@ -57,7 +57,7 @@
 .no-results {
     text-align: center;
     padding: 4rem;
-    color: #6c757d;
+    color: whitesmoke;
 
     mat-icon {
         font-size: 4rem;
@@ -65,6 +65,11 @@
         height: 4rem;
         margin-bottom: 1rem;
         color: #dee2e6;
+    }
+
+    .clear-btn{
+        color: whitesmoke;
+        background-color: #323e51;
     }
 
     h3 {

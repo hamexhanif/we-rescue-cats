@@ -51,7 +51,7 @@
 
     &.admin {
         background: #E08F7E;
-        color: whitesmoke;
+        color: whitesmoke !important;
     }
 }
 
@@ -99,6 +99,41 @@
     &.rejected {
         background: #f8d7da;
         color: #721c24;
+    }
+
+    &.completed {
+        background: #d4edda;
+        color: #155724;
+    }
+}
+
+.whitesmoke-tabs {
+    ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+        color: whitesmoke !important;
+    }
+
+    ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+        color: whitesmoke !important;
+    }
+
+    ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline {
+        border-color: whitesmoke !important;
+        background-color: whitesmoke !important;
+    }
+
+    ::ng-deep .mdc-tab-indicator--active .mdc-tab-indicator__content--underline {
+        border-color: whitesmoke !important;
+        background-color: whitesmoke !important;
+    }
+
+    ::ng-deep .mat-mdc-tab:hover .mdc-tab__text-label {
+        border-color: whitesmoke !important;
+        // background-color: whitesmoke !important;
+        color: whitesmoke !important;
+    }
+
+    ::ng-deep .mat-mdc-tab .mat-ripple-element {
+        background-color: rgba(245, 245, 245, 0.1) !important;
     }
 }
 

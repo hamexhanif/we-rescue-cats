@@ -11,7 +11,6 @@ import { CatService } from '../../../services/cat-service';
 import { Cat } from '../../../models/cat-model';
 import { AdminService } from '../../../services/admin-service';
 import { CreateCatDialogComponent } from '../../../components/create-cat-form/create-cat-form';
-import { AuthService } from '../../../services/auth-service'; //debug
 
 @Component({
   selector: 'app-admin-cats',
@@ -36,20 +35,10 @@ export class AdminCatsComponent implements OnInit {
     private adminService: AdminService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private authService: AuthService //debug
   ) {}
 
   ngOnInit() {
     this.loadCats();
-    this.debugAuthStatus();
-  }
-
-  private debugAuthStatus() { //debug
-    console.log('=== AUTH STATUS DEBUG ===');
-    console.log('Is authenticated:', this.authService.isAuthenticated());
-    console.log('Is admin:', this.authService.isAdmin());
-    console.log('Current user:', this.authService.getCurrentUser());
-    console.log('Token exists:', !!this.authService.getToken());
   }
 
   loadCats() {
@@ -80,10 +69,6 @@ export class AdminCatsComponent implements OnInit {
       }
     });
   }
-
-//   editCat(cat: Cat) {
-//     console.log('Edit cat dialog would open here', cat);
-//   }
 
   deleteCat(cat: Cat) {
     if (confirm(`Are you sure you want to delete ${cat.name}?`)) {

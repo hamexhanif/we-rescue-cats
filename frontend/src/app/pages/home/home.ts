@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CatService } from '../../services/cat-service';
 import { Cat, CatBreed } from '../../models/cat-model';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
-import { StatsComponent } from '../../components/stats/stats';
+import { MapComponent } from '../../components/map/map';
 
 @Component({
   selector: 'app-home',
@@ -21,14 +21,19 @@ import { StatsComponent } from '../../components/stats/stats';
     MatCardModule,
     MatProgressSpinnerModule,
     CatCardComponent,
-    StatsComponent,
+    MapComponent
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class HomeComponent implements OnInit {
   featuredCats: Cat[] = [];
-  stats: any = {};
+  stats: any = {
+    catsRescued: 2847,
+    happyFamilies: 1923,
+    rescuePartners: 156,
+    support: '24/7'
+  };
   loading = true;
   popularBreeds: CatBreed[] = [];
   popularBreedsIds = ['pers', 'siam', 'mcoo', 'bsho', 'ragd', 'rblu', 'sphy', 'sfol'];
@@ -54,8 +59,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.loadFeaturedCats();
-    this.loadStats();
     this.loadPopularBreeds();
+  }
+
+  onFiltersChanged(filters: any) {
+    console.log('Filters changed:', filters);
   }
 
   loadFeaturedCats() {
@@ -74,27 +82,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  loadStats() {
-    this.catService.getStats().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.stats = response.data;
-        }
-      },
-      error: (error) => {
-        console.error('Error loading stats:', error);
-        this.stats = {
-          catsRescued: 2847,
-          happyFamilies: 1923,
-          rescuePartners: 156,
-          support: '24/7'
-        };
-      }
-    });
-  }
-
   loadPopularBreeds() {
-    this.catService.getTheCatBreeds().subscribe({
+    this.catService.getCatBreeds().subscribe({
       next: (allBreeds: CatBreed[]) => {
         const popularIds = new Set(this.popularBreedsIds);
         this.popularBreeds = allBreeds.filter(breed => popularIds.has(breed.id));

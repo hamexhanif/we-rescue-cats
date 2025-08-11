@@ -20,8 +20,8 @@ import { User } from '../../../models/auth-model';
     MatCardModule,
     MatChipsModule
   ],
-  templateUrl: './admin-user.html',
-  styleUrl: './admin-user.scss'
+  templateUrl: './admin-users.html',
+  styleUrl: './admin-users.scss'
 })
 export class AdminUsersComponent implements OnInit {
   users: User[] = [];
