@@ -1,0 +1,70 @@
+<div class="admin-cats-page">
+    <div class="page-header">
+        <h1>Manage Cats</h1>
+        <button mat-raised-button (click)="addNewCat()">
+            <mat-icon>add</mat-icon>
+            Add New Cat
+        </button>
+    </div>
+
+    <mat-card class="cats-table-card">
+        <table mat-table [dataSource]="cats" class="cats-table">
+            <ng-container matColumnDef="image">
+                <th mat-header-cell *matHeaderCellDef>Image</th>
+                <td mat-cell *matCellDef="let cat">
+                    <div class="cat-image-cell">
+                        <img *ngIf="cat.imageUrl" [src]="cat.imageUrl" [alt]="cat.name">
+                        <mat-icon *ngIf="!cat.imageUrl">pets</mat-icon>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let cat">
+                    <div class="cat-name-cell">
+                        <strong>{{cat.name}}</strong>
+                        <small>{{cat.breed}}</small>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="details">
+                <th mat-header-cell *matHeaderCellDef>Details</th>
+                <td mat-cell *matCellDef="let cat">
+                    {{cat.age}} years • {{cat.gender}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let cat">
+                    <mat-chip [ngClass]="cat.adoptionStatus.toLowerCase()">
+                        {{cat.adoptionStatus}}
+                    </mat-chip>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef>Location</th>
+                <td mat-cell *matCellDef="let cat">{{cat.address}}</td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Delete</th>
+                <td mat-cell *matCellDef="let cat">
+                    <!-- <button mat-icon-button (click)="editCat(cat)">
+                        <mat-icon>edit</mat-icon>
+                    </button> -->
+                    <button mat-icon-button color="warn" (click)="deleteCat(cat)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </mat-card>
+</div>

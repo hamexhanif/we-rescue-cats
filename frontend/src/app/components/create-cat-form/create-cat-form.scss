@@ -1,0 +1,39 @@
+.cat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 500px;
+    max-width: 600px;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.half-width {
+    flex: 1;
+}
+
+::ng-deep .success-snackbar {
+    background-color: #4caf50 !important;
+    color: white !important;
+
+    .mat-mdc-simple-snack-bar-action {
+        color: white !important;
+    }
+}
+
+::ng-deep .error-snackbar {
+    background-color: #f44336 !important;
+    color: white !important;
+
+    .mat-mdc-simple-snack-bar-action {
+        color: white !important;
+    }
+}
