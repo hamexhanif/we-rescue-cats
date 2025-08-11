@@ -5,10 +5,6 @@ import io.werescuecats.backend.repository.BreedRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,33 +29,18 @@ class BreedServiceIntegrationTest {
     private BreedRepository breedRepository;
 
     @Test
-    void getAllBreeds_PageSizeOne_ReturnsOneBreedPerPage() {
+    void getAllBreeds_Success() {
         breedRepository.saveAll(List.of(
             createTestBreed("siam", "Siamese"),
             createTestBreed("pers", "Persian")
         ));
 
-        Page<Breed> firstPage = breedService.getAllBreeds(PageRequest.of(0, 1));
-        Page<Breed> secondPage = breedService.getAllBreeds(PageRequest.of(1, 1));
+        List<Breed> firstTry = breedService.getAllBreeds();
+        List<Breed> secondTry = breedService.getAllBreeds();
 
-        assertEquals(1, firstPage.getContent().size());
-        assertEquals(1, secondPage.getContent().size());
+        assertEquals(2, firstTry.size());
+        assertEquals(2, secondTry.size());
     }
-
-    @Test
-    void getAllBreeds_SortedByName_ReturnsSortedResults() {
-        breedRepository.saveAll(List.of(
-            createTestBreed("zzz", "Zebra Cat"),
-            createTestBreed("aaa", "Abyssinian")
-        ));
-
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
-        Page<Breed> result = breedService.getAllBreeds(pageable);
-
-        List<Breed> content = result.getContent();
-        assertEquals("Abyssinian", content.get(0).getName());
-        assertEquals("Zebra Cat", content.get(1).getName());
-    } 
 
     @Test
     void searchBreeds_Integration_WorksCorrectly() {

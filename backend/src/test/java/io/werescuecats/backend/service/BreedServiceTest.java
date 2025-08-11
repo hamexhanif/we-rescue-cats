@@ -10,9 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -114,7 +111,7 @@ class BreedServiceTest {
     }
 
     @Test
-    void getAllBreeds_WithPagination_ReturnsPagedBreeds() {
+    void getAllBreeds_Success() {
         Breed breed1 = new Breed();
         breed1.setId("siam");
         breed1.setName("Siamese");
@@ -124,15 +121,13 @@ class BreedServiceTest {
         breed2.setName("Persian");
 
         List<Breed> breedList = Arrays.asList(breed1, breed2);
-        PageRequest pageable = PageRequest.of(0, 10);
-        Page<Breed> expectedPage = new PageImpl<>(breedList, pageable, breedList.size());
 
-        when(breedRepository.findAll(pageable)).thenReturn(expectedPage);
+        when(breedRepository.findAll()).thenReturn(breedList);
 
-        Page<Breed> result = breedService.getAllBreeds(pageable);
+        List<Breed> result = breedService.getAllBreeds();
 
-        assertEquals(expectedPage, result);
-        verify(breedRepository).findAll(pageable);
+        assertEquals(breedList, result);
+        verify(breedRepository).findAll();
     }
 
     @Test

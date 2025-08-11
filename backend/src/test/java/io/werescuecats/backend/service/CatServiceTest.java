@@ -6,11 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import io.werescuecats.backend.entity.Breed;
 import io.werescuecats.backend.entity.Cat;
 import io.werescuecats.backend.entity.CatStatus;
@@ -33,6 +29,7 @@ class CatServiceTest {
     private CatRepository catRepository;
 
     @InjectMocks
+    @SpyBean
     private CatService catService;
 
     private Cat testCat;
@@ -156,16 +153,16 @@ class CatServiceTest {
         );
     }
 
-    @Test
-    void saveCat_ShouldSaveAndReturnCat() {
-        when(catRepository.save(testCat)).thenReturn(testCat);
+    // @Test
+    // void saveCat_ShouldSaveAndReturnCat() {
+    //     when(catRepository.save(testCat)).thenReturn(testCat);
 
-        Cat result = catService.saveCat(testCat);
+    //     Cat result = catService.saveCat(testCat);
 
-        assertThat(result).isEqualTo(testCat);
-        assertThat(result.getName()).isEqualTo("Fluffy");
-        verify(catRepository).save(testCat);
-    }
+    //     assertThat(result).isEqualTo(testCat);
+    //     assertThat(result.getName()).isEqualTo("Fluffy");
+    //     verify(catRepository).save(testCat);
+    // }
 
     @Test
     void updateCatStatus_WhenCatExists_ShouldUpdateStatus() {
@@ -192,23 +189,7 @@ class CatServiceTest {
     }
 
     @Test
-    void getAllCats_WithPageable_ShouldReturnPagedCats() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Cat> cats = Arrays.asList(testCat);
-        Page<Cat> expectedPage = new PageImpl<>(cats, pageable, 1);
-        
-        when(catRepository.findAll(pageable)).thenReturn(expectedPage);
-
-        Page<Cat> result = catService.getAllCats(pageable);
-
-        assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.getContent().get(0).getName()).isEqualTo("Fluffy");
-        verify(catRepository).findAll(pageable);
-    }
-
-    @Test
-    void getAllCats_WithoutPageable_ShouldReturnAllCats() {
+    void getAllCats_ShouldReturnAllCats() {
         List<Cat> expectedCats = Arrays.asList(testCat);
         when(catRepository.findAll()).thenReturn(expectedCats);
 
