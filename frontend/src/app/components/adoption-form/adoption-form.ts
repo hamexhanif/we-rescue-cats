@@ -56,7 +56,6 @@ export class AdoptionFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Current token:', this.authService.getToken());
     if (this.adoptionForm.valid) {
       this.loading = true;
       
